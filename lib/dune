@@ -1,0 +1,7 @@
+(library
+  (name lib)
+  (flags (-w -40 -w +26))
+  (public_name quizzy-stream)
+  (libraries console.lib pastel.lib calendar uuidm)
+  (preprocess
+    (pps ppx_deriving.std)))

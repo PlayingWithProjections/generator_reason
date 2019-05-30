@@ -1,0 +1,28 @@
+{
+  "name": "quizzy-stream",
+  "version": "0.1.0",
+  "license": "MIT",
+  "esy": {
+    "build": "refmterr dune build -p #{self.name}",
+    "NOTE": "Optional release Section. Customizes result of `esy release`",
+    "release": { "bin": [ "Hello" ] }
+  },
+  "scripts": { "test": "esy x Hello", "doc": "esy dune build @doc" },
+  "dependencies": {
+    "@esy-ocaml/reason": "*",
+    "@opam/calendar": "2.04",
+    "@opam/dune": "*",
+    "@opam/ppx_deriving": "4.2.1",
+    "@opam/uuidm": "0.9.7",
+    "@reason-native/console": "*",
+    "@reason-native/pastel": "*",
+    "@reason-native/rely": "*",
+    "ocaml": "~4.6.0",
+    "refmterr": "*"
+  },
+  "devDependencies": {
+    "@opam/merlin": "*",
+    "ocaml": "~4.6.0",
+    "@opam/odoc": "*"
+  }
+}

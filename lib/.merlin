@@ -1,0 +1,21 @@
+EXCLUDE_QUERY_DIR
+B /home/thomas/.esy/3___________________________________________________________________/i/ocaml-4.6.10-17491746/lib/ocaml
+B /home/thomas/.esy/3___________________________________________________________________/i/opam__s__calendar-opam__c__2.04-24ed61ee/lib/calendar
+B /home/thomas/.esy/3___________________________________________________________________/i/opam__s__ocamlfind-opam__c__1.8.0-9295354e/lib/bytes
+B /home/thomas/.esy/3___________________________________________________________________/i/opam__s__ppx__deriving-opam__c__4.2.1-1016bbe5/lib/ppx_deriving
+B /home/thomas/.esy/3___________________________________________________________________/i/opam__s__result-opam__c__1.4-9a720721/lib/result
+B /home/thomas/.esy/3___________________________________________________________________/i/opam__s__uuidm-opam__c__0.9.7-9b1cacb0/lib/uuidm
+B /home/thomas/.esy/3___________________________________________________________________/i/reason_native__s__console-0.1.0-f6db0764/lib/console/lib
+B /home/thomas/.esy/3___________________________________________________________________/i/reason_native__s__pastel-0.2.1-8e6bd067/lib/pastel/lib
+B /home/thomas/Workspace/playing_with_projections_group/stream/_esy/default/store/b/quizzy_stream-873c9482/default/lib/.lib.objs/byte
+S /home/thomas/.esy/3___________________________________________________________________/i/ocaml-4.6.10-17491746/lib/ocaml
+S /home/thomas/.esy/3___________________________________________________________________/i/opam__s__calendar-opam__c__2.04-24ed61ee/lib/calendar
+S /home/thomas/.esy/3___________________________________________________________________/i/opam__s__ocamlfind-opam__c__1.8.0-9295354e/lib/bytes
+S /home/thomas/.esy/3___________________________________________________________________/i/opam__s__ppx__deriving-opam__c__4.2.1-1016bbe5/lib/ppx_deriving
+S /home/thomas/.esy/3___________________________________________________________________/i/opam__s__result-opam__c__1.4-9a720721/lib/result
+S /home/thomas/.esy/3___________________________________________________________________/i/opam__s__uuidm-opam__c__0.9.7-9b1cacb0/lib/uuidm
+S /home/thomas/.esy/3___________________________________________________________________/i/reason_native__s__console-0.1.0-f6db0764/lib/console/lib
+S /home/thomas/.esy/3___________________________________________________________________/i/reason_native__s__pastel-0.2.1-8e6bd067/lib/pastel/lib
+S .
+FLG -ppx '/home/thomas/Workspace/playing_with_projections_group/stream/_esy/default/store/b/quizzy_stream-873c9482/default/.ppx/30a18adec0a1407675322d723bf1b0ae/ppx.exe --as-ppx --cookie '\''library-name="lib"'\'''
+FLG -open Lib -w -40 -w +26

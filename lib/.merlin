@@ -18,4 +18,4 @@ S /home/thomas/.esy/3___________________________________________________________
 S /home/thomas/.esy/3___________________________________________________________________/i/reason_native__s__pastel-0.2.1-8e6bd067/lib/pastel/lib
 S .
 FLG -ppx '/home/thomas/Workspace/playing_with_projections_group/stream/_esy/default/store/b/quizzy_stream-873c9482/default/.ppx/30a18adec0a1407675322d723bf1b0ae/ppx.exe --as-ppx --cookie '\''library-name="lib"'\'''
-FLG -open Lib -w -40 -w +26
+FLG -open Lib -w -40 -w +A-48 -warn-error +A-3-44

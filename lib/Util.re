@@ -10,6 +10,34 @@ let generateId = () => Uuidm.v4_gen(randomState, ());
 
 module Quiz = {
   type t = Uuidm.t;
+  let generateRandomAmountOfQuestions = (quizId, timeStamp) => {
+    let nbOfQuestions = Random.int(10);
+    let rec generate = (i, questions) =>
+      if (i > nbOfQuestions) {
+        questions;
+      } else {
+        generate(
+          i + 1,
+          [
+            QuestionAddToQuiz({
+              id: generateId(),
+              quizId,
+              question: "Some random question",
+              answer: "Some answer",
+              timeStamp,
+            }),
+            ...questions,
+          ],
+        );
+      };
+    generate(0, []);
+  };
+  let createQuiz = (ownerId, timeStamp) => {
+    let quizId = generateId();
+    [QuizWasCreated({id: quizId, ownerId, timeStamp, quizTitle: "Todo"})]
+    @ generateRandomAmountOfQuestions(quizId, timeStamp)
+    @ [QuizWasPublished({id: generateId(), quizId, timeStamp})];
+  };
 };
 
 module Player = {
@@ -32,23 +60,20 @@ module Player = {
       }),
     );
   };
-  let handler = (player, state, event) => {
+  let handler = (player, _state, event) => {
     switch (event) {
     | MinuteHasPassed({timeStamp}) =>
       if (amountPerDay(50) |> shouldHappen) {
-        Some(
-          QuizWasCreated({
-            id: generateId(),
-            ownerId: player.playerId,
-            timeStamp,
-          }),
-        );
+        Some(Quiz.createQuiz(player.playerId, timeStamp));
       } else {
         None;
       }
-    | GameWasOpened(payload) => None
-    | PlayerJoinedGame(payload) => None
-    | PlayerHasRegistered(payload) => None
+    | GameWasOpened(_)
+    | PlayerJoinedGame(_)
+    | PlayerHasRegistered(_)
+    | QuizWasCreated(_)
+    | QuestionAddToQuiz(_)
+    | QuizWasPublished(_) => None
     };
   };
 };
@@ -61,7 +86,7 @@ type outcome =
     };
 
 module World = {
-  let handler = (state, event) => {
+  let handler = (_state, event) => {
     switch (event) {
     | MinuteHasPassed({timeStamp}) =>
       if (amountPerDay(50) |> shouldHappen) {
@@ -70,9 +95,12 @@ module World = {
       } else {
         NothingChanged;
       }
-    | GameWasOpened(payload) => NothingChanged
-    | PlayerJoinedGame(payload) => NothingChanged
-    | PlayerHasRegistered(payload) => NothingChanged
+    | GameWasOpened(_)
+    | PlayerJoinedGame(_)
+    | PlayerHasRegistered(_)
+    | QuizWasCreated(_)
+    | QuestionAddToQuiz(_)
+    | QuizWasPublished(_) => NothingChanged
     };
   };
 };
@@ -88,7 +116,7 @@ let playerHandler = (state, event) => {
     player =>
       switch (Player.handler(player, state, event)) {
       | None => NothingChanged
-      | Some(event) => Update({newEvents: [event], newPlayers: []})
+      | Some(events) => Update({newEvents: events, newPlayers: []})
       },
     state.players,
   );

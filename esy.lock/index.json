@@ -1,5 +1,5 @@
 {
-  "checksum": "9618dcd888ddf77941ee52dc8d1137c6",
+  "checksum": "bd02f19b10c57a7ddc6a52051a208207",
   "root": "quizzy-stream@link-dev:./package.json",
   "node": {
     "refmterr@3.1.10@d41d8cd9": {
@@ -31,13 +31,14 @@
       "overrides": [],
       "dependencies": [
         "refmterr@3.1.10@d41d8cd9", "ocaml@4.6.10@d41d8cd9",
-        "@reason-native/rely@2.1.0@d41d8cd9",
+        "@reason-native/rely@2.2.0@d41d8cd9",
         "@reason-native/pastel@0.2.1@d41d8cd9",
         "@reason-native/console@0.1.0@d41d8cd9",
         "@opam/uuidm@opam:0.9.7@bf725775",
         "@opam/ppx_deriving@opam:4.2.1@7927b93a",
         "@opam/dune@opam:1.9.3@cccbbfe7",
         "@opam/calendar@opam:2.04@5110954c",
+        "@opam/base@opam:v0.12.2@e209c8f2",
         "@esy-ocaml/reason@3.4.0@d41d8cd9"
       ],
       "devDependencies": [
@@ -59,14 +60,14 @@
       "dependencies": [],
       "devDependencies": []
     },
-    "@reason-native/rely@2.1.0@d41d8cd9": {
-      "id": "@reason-native/rely@2.1.0@d41d8cd9",
+    "@reason-native/rely@2.2.0@d41d8cd9": {
+      "id": "@reason-native/rely@2.2.0@d41d8cd9",
       "name": "@reason-native/rely",
-      "version": "2.1.0",
+      "version": "2.2.0",
       "source": {
         "type": "install",
         "source": [
-          "archive:https://registry.npmjs.org/@reason-native/rely/-/rely-2.1.0.tgz#sha1:f562a8dc2ad51d1d4930ac6278d98e6547bb8c33"
+          "archive:https://registry.npmjs.org/@reason-native/rely/-/rely-2.2.0.tgz#sha1:85f34f15dcd8547033759d9fccdba03e12a32031"
         ]
       },
       "overrides": [],
@@ -291,6 +292,29 @@
         "ocaml@4.6.10@d41d8cd9", "@opam/result@opam:1.4@7add0d71",
         "@opam/ocamlbuild@opam:0.14.0@427a2331"
       ]
+    },
+    "@opam/sexplib0@opam:v0.12.0@e823b4e9": {
+      "id": "@opam/sexplib0@opam:v0.12.0@e823b4e9",
+      "name": "@opam/sexplib0",
+      "version": "opam:v0.12.0",
+      "source": {
+        "type": "install",
+        "source": [
+          "archive:https://opam.ocaml.org/cache/md5/24/2486a25d3a94da9a94acc018b5f09061#md5:2486a25d3a94da9a94acc018b5f09061",
+          "archive:https://ocaml.janestreet.com/ocaml-core/v0.12/files/sexplib0-v0.12.0.tar.gz#md5:2486a25d3a94da9a94acc018b5f09061"
+        ],
+        "opam": {
+          "name": "sexplib0",
+          "version": "v0.12.0",
+          "path": "esy.lock/opam/sexplib0.v0.12.0"
+        }
+      },
+      "overrides": [],
+      "dependencies": [
+        "ocaml@4.6.10@d41d8cd9", "@opam/dune@opam:1.9.3@cccbbfe7",
+        "@esy-ocaml/substs@0.0.1@d41d8cd9"
+      ],
+      "devDependencies": [ "ocaml@4.6.10@d41d8cd9" ]
     },
     "@opam/seq@opam:0.1@93954fa7": {
       "id": "@opam/seq@opam:0.1@93954fa7",
@@ -1013,6 +1037,31 @@
       ],
       "devDependencies": [
         "ocaml@4.6.10@d41d8cd9", "@opam/ocamlfind@opam:1.8.0@f744a0c5"
+      ]
+    },
+    "@opam/base@opam:v0.12.2@e209c8f2": {
+      "id": "@opam/base@opam:v0.12.2@e209c8f2",
+      "name": "@opam/base",
+      "version": "opam:v0.12.2",
+      "source": {
+        "type": "install",
+        "source": [
+          "archive:https://opam.ocaml.org/cache/md5/71/7150e848a730369a2549d01645fb6c72#md5:7150e848a730369a2549d01645fb6c72",
+          "archive:https://github.com/janestreet/base/archive/v0.12.2.tar.gz#md5:7150e848a730369a2549d01645fb6c72"
+        ],
+        "opam": {
+          "name": "base",
+          "version": "v0.12.2",
+          "path": "esy.lock/opam/base.v0.12.2"
+        }
+      },
+      "overrides": [],
+      "dependencies": [
+        "ocaml@4.6.10@d41d8cd9", "@opam/sexplib0@opam:v0.12.0@e823b4e9",
+        "@opam/dune@opam:1.9.3@cccbbfe7", "@esy-ocaml/substs@0.0.1@d41d8cd9"
+      ],
+      "devDependencies": [
+        "ocaml@4.6.10@d41d8cd9", "@opam/sexplib0@opam:v0.12.0@e823b4e9"
       ]
     },
     "@opam/astring@opam:0.8.3@4e5e17d5": {

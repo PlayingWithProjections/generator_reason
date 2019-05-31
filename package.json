@@ -10,6 +10,7 @@
   "scripts": { "test": "esy x Hello", "doc": "esy dune build @doc" },
   "dependencies": {
     "@esy-ocaml/reason": "*",
+    "@opam/base": "v0.12.2",
     "@opam/calendar": "2.04",
     "@opam/dune": "*",
     "@opam/ppx_deriving": "4.2.1",
@@ -24,5 +25,9 @@
     "@opam/merlin": "*",
     "ocaml": "~4.6.0",
     "@opam/odoc": "*"
+  },
+  "resolutions": {
+    "@opam/reason":
+      "let-def/reason:reason.opam#a74679fd11b940d01a1326bfc5b95d598e285546"
   }
 }

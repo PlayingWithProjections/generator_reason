@@ -1,35 +1,35 @@
 [@deriving show]
 type event =
   | PlayerHasRegistered{
-      playerId: Uuidm.t,
+      playerId: Uuid.t,
       lastName: string,
       firstName: string,
       timeStamp: int,
     }
   | QuizWasCreated{
-      id: Uuidm.t,
-      ownerId: Uuidm.t,
+      id: Uuid.t,
+      ownerId: Uuid.t,
       timeStamp: int,
       quizTitle: string,
     }
-  | QuestionAddToQuiz{
-      id: Uuidm.t,
-      quizId: Uuidm.t,
+  | QuestionAddedToQuiz{
+      id: Uuid.t,
+      quizId: Uuid.t,
       question: string,
       answer: string,
       timeStamp: int,
     }
   | QuizWasPublished{
-      id: Uuidm.t,
-      quizId: Uuidm.t,
+      id: Uuid.t,
+      quizId: Uuid.t,
       timeStamp: int,
     }
   | GameWasOpened{
-      quizId: Uuidm.t,
-      gameId: Uuidm.t,
+      quizId: Uuid.t,
+      gameId: Uuid.t,
     }
   | PlayerJoinedGame{
-      playerId: Uuidm.t,
-      gameId: Uuidm.t,
+      playerId: Uuid.t,
+      gameId: Uuid.t,
     }
   | MinuteHasPassed{timeStamp: int};

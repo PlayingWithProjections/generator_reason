@@ -1,9 +1,4 @@
 open! Base;
-// Check the TODO later down
-// Then we need to make sure timestamps work correctly
-// + start using distributions for different kind of players
-// mostly for a player that plays only once, or a few times or always,....
-// in my current implementation there are 4,5 million events after less then 14 days...
 
 module Quiz = {
   let generateRandomAmountOfQuestions = () => {
@@ -29,17 +24,16 @@ module Quiz = {
   let createQuiz = (ownerId, timestamp) => {
     let quizId = Uuid.generateId();
     let questions = generateRandomAmountOfQuestions();
-    (
-      World.AddQuiz(World.Quiz.create(~id=quizId, ~questions)),
-      [
-        Events.create(
-          ~timestamp,
-          ~type_=Events.QuizWasCreated({quizId, ownerId, quizTitle: "Todo"}),
-        ),
-      ]
-      @ List.map(
-          ~f=
-            ({World.Quiz.question, answer, id}) =>
+    let createEvent =
+      Events.create(
+        ~timestamp,
+        ~type_=Events.QuizWasCreated({quizId, ownerId, quizTitle: "Todo"}),
+      );
+    let events =
+      List.fold_left(
+        ~f=
+          (events, {World.Quiz.question, answer, id}) =>
+            [
               Events.create(
                 ~timestamp,
                 ~type_=
@@ -50,14 +44,20 @@ module Quiz = {
                     answer,
                   }),
               ),
-          questions,
-        )
-      @ [
-        Events.create(
-          ~timestamp,
-          ~type_=Events.QuizWasPublished({quizId: quizId}),
-        ),
-      ],
+              ...events,
+            ],
+        ~init=[createEvent],
+        questions,
+      );
+    let publishEvent =
+      Events.create(
+        ~timestamp,
+        ~type_=Events.QuizWasPublished({quizId: quizId}),
+      );
+
+    (
+      World.AddQuiz(World.Quiz.create(~id=quizId, ~questions)),
+      [publishEvent, ...events],
     );
   };
 };
@@ -205,15 +205,6 @@ let playGame = (world, timestamp) => {
     };
 
   events;
-  // Wouldn't it be easier if we played the whole game here instead of going over the ticks?
-  // we could do this by going over the players, picking players that want to join, saving these as PlayerJoinedGame,
-  // then if no-one joined, cancel it
-  // if joined, then game was started
-  // then going over all the questions and start asking them to each player
-  // a player answers (correctly or incorrectly or timeout)
-  // we ask the next question
-  // and as such we don't need to keep complex state and look it up the whole time eiter
-  // and the handlers will only care about MinuteHasPassed
 };
 
 module Player = {
@@ -278,7 +269,7 @@ let handleTick = (timestamp, world) => {
 };
 
 let rec run = (timestamp, events, state) =>
-  if (timestamp <= 1000) {
+  if (timestamp <= 100) {
     let outcomes = handleTick(timestamp, state.State.world);
     let (newState, newEvents) =
       List.fold_left(~f=State.update, ~init=(state, []), outcomes);

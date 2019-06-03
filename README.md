@@ -13,3 +13,13 @@ Then run the `esy` command from this project root to install and build depenenci
     % esy
 
 Now you can run the program with `esy x Hello`
+
+## TODO
+
+This is a working list, more todos will probably be needed
+
+* [x] make sure the events are in the correct order
+* [x] save the events to a file
+* [] implement different player types (fast answers, always correct, slow, only play one time, top players, only create a quiz, never play, bots,...)
+* [] implement random names and questions with answers
+* [] implement marketing campaign

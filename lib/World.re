@@ -1,4 +1,4 @@
-open Base;
+open! Base;
 
 module Quiz = {
   type quizType =
@@ -8,6 +8,7 @@ module Quiz = {
   type question = {
     question: string,
     answer: string,
+    id: Uuid.t
   };
   type t = {
     id: Uuid.t,
@@ -88,5 +89,10 @@ let update = (world, updates) => {
 };
 
 let activePlayers = world => world.players;
+
+let playersThatJoinAGame = world => List.filter(~f = player => {
+	Player.joinGameDistribution(player) 
+			|> Distribution.happens
+}, world.players);
 
 let pickQuiz = world => Distribution.listRandom(world.quizzes);

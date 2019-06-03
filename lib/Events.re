@@ -32,4 +32,16 @@ type event =
       playerId: Uuid.t,
       gameId: Uuid.t,
     }
-  | MinuteHasPassed{timeStamp: int};
+  | GameWasCancelled{
+      id: Uuid.t,
+      gameId: Uuid.t,
+    }
+  | GameWasStarted{
+      id: Uuid.t,
+      gameId: Uuid.t,
+    }
+  | QuestionWasAsked{
+      id: Uuid.t,
+      gameId: Uuid.t,
+      questionId: Uuid.t,
+    };

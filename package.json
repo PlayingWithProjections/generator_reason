@@ -23,11 +23,13 @@
   },
   "devDependencies": {
     "@opam/merlin": "*",
+    "@opam/merlin-lsp": "*",
     "ocaml": "~4.6.0",
     "@opam/odoc": "*"
   },
   "resolutions": {
     "@opam/reason":
-      "let-def/reason:reason.opam#a74679fd11b940d01a1326bfc5b95d598e285546"
+      "let-def/reason:reason.opam#a74679fd11b940d01a1326bfc5b95d598e285546",
+  	"@opam/merlin-lsp": "github:ocaml/merlin:merlin-lsp.opam#5af6d2dccc94dd6baad984c725fab3166e96fa7a"
   }
 }

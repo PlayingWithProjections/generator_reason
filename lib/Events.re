@@ -36,7 +36,7 @@ and payload =
       gameId: Uuid.t,
       questionId: Uuid.t,
     }
-  | TimeHasExpired{
+  | TimerHasExpired{
       questionId: Uuid.t,
       playerId: Uuid.t,
       gameId: Uuid.t,
@@ -74,7 +74,7 @@ let toJson = event => {
     | GameWasCancelled(_) => "GameWasCancelled"
     | GameWasStarted(_) => "GameWasStarted"
     | GameWasFinished(_) => "GameWasFinished"
-    | TimeHasExpired(_) => "TimeHasExpired"
+    | TimerHasExpired(_) => "TimerHasExpired"
     };
   let payload =
     switch (event.type_) {
@@ -132,19 +132,22 @@ let toJson = event => {
       `Assoc([("game_id", `String(gameId |> Uuid.to_string))])
     | GameWasFinished({gameId}) =>
       `Assoc([("game_id", `String(gameId |> Uuid.to_string))])
-    | TimeHasExpired({gameId, questionId, playerId}) =>
+    | TimerHasExpired({gameId, questionId, playerId}) =>
       `Assoc([
         ("game_id", `String(gameId |> Uuid.to_string)),
         ("question_id", `String(questionId |> Uuid.to_string)),
         ("player_id", `String(playerId |> Uuid.to_string)),
       ])
     };
-  let timestamp = CalendarLib.Calendar.Precise.from_unixfloat(float_of_int(event.timestamp))
+  let timestamp =
+    CalendarLib.Calendar.Precise.from_unixfloat(
+      float_of_int(event.timestamp),
+    )
     |> CalendarLib.Printer.Precise_Calendar.sprint("%iT%T%z");
   `Assoc([
     ("id", `String(Uuid.to_string(event.id))),
     ("type", `String(stringType)),
     ("timestamp", `String(timestamp)),
     ("payload", payload),
-  ])
+  ]);
 };

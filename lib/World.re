@@ -8,7 +8,7 @@ module Quiz = {
   type question = {
     question: string,
     answer: string,
-    id: Uuid.t
+    id: Uuid.t,
   };
   type t = {
     id: Uuid.t,
@@ -30,6 +30,17 @@ module Player = {
   };
   let create = (~id) => {id, playerType: Normal};
   let joinGameDistribution = _player => Distribution.OneIn(10);
+  let answerQuestion = player =>
+    switch (player.playerType) {
+    | Bot => `AnswerCorrectly
+    | Normal =>
+      open! Poly;
+      switch (Random.float(1.)) {
+      | x when x >= 0.9 => `AnswerCorrectly
+      | x when x >= 0.7 => `AnswerTimeout
+      | _ => `AnswerIncorrectly
+      };
+    };
 };
 
 module Game = {
@@ -90,9 +101,10 @@ let update = (world, updates) => {
 
 let activePlayers = world => world.players;
 
-let playersThatJoinAGame = world => List.filter(~f = player => {
-	Player.joinGameDistribution(player) 
-			|> Distribution.happens
-}, world.players);
+let playersThatJoinAGame = world =>
+  List.filter(
+    ~f=player => Player.joinGameDistribution(player) |> Distribution.happens,
+    world.players,
+  );
 
 let pickQuiz = world => Distribution.listRandom(world.quizzes);

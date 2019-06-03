@@ -139,8 +139,8 @@ let playGame = (world, timestamp) => {
       let events =
         List.fold_left(
           ~f=
-            (events, question) =>
-              [
+            (events, question) => {
+              let questionEvent =
                 Events.create(
                   ~timestamp,
                   ~type_=
@@ -148,9 +148,40 @@ let playGame = (world, timestamp) => {
                       gameId,
                       questionId: question.World.Quiz.id,
                     }),
-                ),
-                ...events,
-              ],
+                );
+              let responseEvents =
+                List.map(
+                  ~f=
+                    player => {
+                      let type_ =
+                        switch (World.Player.answerQuestion(player)) {
+                        | `AnswerCorrectly =>
+                          Events.AnswerWasGiven({
+                            questionId: question.World.Quiz.id,
+                            gameId,
+                            playerId: player.World.Player.id,
+                            answer: question.World.Quiz.answer,
+                          })
+                        | `AnswerIncorrectly =>
+                          Events.AnswerWasGiven({
+                            questionId: question.World.Quiz.id,
+                            gameId,
+                            playerId: player.World.Player.id,
+                            answer: "TODO random incorrect answer",
+                          })
+                        | `AnswerTimeout =>
+                          Events.TimerHasExpired({
+                            questionId: question.World.Quiz.id,
+                            gameId,
+                            playerId: player.World.Player.id,
+                          })
+                        };
+                      Events.create(~timestamp, ~type_);
+                    },
+                  players,
+                );
+              responseEvents @ [questionEvent, ...events];
+            },
           ~init=events,
           quiz.World.Quiz.questions,
         );
@@ -231,7 +262,7 @@ let handleTick = (timestamp, world) => {
 };
 
 let rec run = (timestamp, events, state) =>
-  if (timestamp <= 100) {
+  if (timestamp <= 250) {
     let outcomes = handleTick(timestamp, state.State.world);
     let (newState, newEvents) =
       List.fold_left(~f=State.update, ~init=(state, []), outcomes);
@@ -242,11 +273,6 @@ let rec run = (timestamp, events, state) =>
 
 let hello = () => {
   let events = run(0, [], State.empty);
-  let _ =
-    List.map(
-      ~f=event => Events.show_event(event) |> Console.Pipe.log,
-      events,
-    );
   let _ =
     List.map(
       ~f=

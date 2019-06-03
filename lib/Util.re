@@ -268,18 +268,32 @@ let handleTick = (timestamp, world) => {
   List.map(~f=handler => handler(timestamp, world), handlers) |> List.concat;
 };
 
-let rec run = (timestamp, events, state) =>
-  if (timestamp <= 100) {
+let timestampRange = period => {
+  open CalendarLib.Calendar;
+  let now = Precise.now();
+  let start = Precise.add(now, Precise.Period.opp(period));
+  (
+    Precise.to_unixfloat(start) |> Int.of_float,
+    Precise.to_unixfloat(now) |> Int.of_float,
+  );
+};
+
+let tenMinutes = 60 * 10;
+
+let rec run = (timestamp, endTimestamp, events, state) =>
+  if (timestamp <= endTimestamp) {
     let outcomes = handleTick(timestamp, state.State.world);
     let (newState, newEvents) =
       List.fold_left(~f=State.update, ~init=(state, []), outcomes);
-    run(timestamp + 1, newEvents @ events, newState);
+    run(timestamp + tenMinutes, endTimestamp, newEvents @ events, newState);
   } else {
     state.State.events;
   };
 
 let hello = () => {
-  let events = run(0, [], State.empty);
+  let period = CalendarLib.Calendar.Precise.Period.day(2);
+  let (startTimestamp, endTimestamp) = timestampRange(period);
+  let events = run(startTimestamp, endTimestamp, [], State.empty);
   let jsonEvents = List.rev_map(~f=Events.toJson, events);
   Console.log(List.length(events));
   Yojson.Basic.to_file("data/0.json", `List(jsonEvents));

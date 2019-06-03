@@ -6,7 +6,6 @@ module Uuid_T = {
   let sexp_of_t = (t): Base.Sexp.t => Base.Sexp.Atom(Uuidm.to_string(t));
 };
 
-
 include Uuid_T;
 include Base.Comparator.Make(Uuid_T);
 

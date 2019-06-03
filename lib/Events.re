@@ -26,12 +26,8 @@ and payload =
       quizId: Uuid.t,
       gameId: Uuid.t,
     }
-  | GameWasCancelled{
-      gameId: Uuid.t,
-    }
-  | GameWasStarted{
-      gameId: Uuid.t,
-    }
+  | GameWasCancelled{gameId: Uuid.t}
+  | GameWasStarted{gameId: Uuid.t}
   | PlayerJoinedGame{
       playerId: Uuid.t,
       gameId: Uuid.t,
@@ -40,7 +36,7 @@ and payload =
       gameId: Uuid.t,
       questionId: Uuid.t,
     }
-  | TimeHasExperid{
+  | TimeHasExpired{
       questionId: Uuid.t,
       playerId: Uuid.t,
       gameId: Uuid.t,
@@ -57,4 +53,96 @@ and payload =
       gameId: Uuid.t,
     };
 
-let create = (~timestamp, ~type_) => {id: Uuid.generateId(), type_, timestamp};
+let create = (~timestamp, ~type_) => {
+  id: Uuid.generateId(),
+  type_,
+  timestamp,
+};
+
+let toJson = event => {
+  let stringType =
+    switch (event.type_) {
+    | AnswerWasGiven(_) => "AnswerWasGiven"
+    | PlayerJoinedGame(_) => "PlayerJoinedGame"
+    | PlayerHasRegistered(_) => "PlayerHasRegistered"
+    | QuizWasCreated(_) => "QuizWasCreated"
+    | QuestionAddedToQuiz(_) => "QuestionAddedToQuiz"
+    | QuestionWasAsked(_) => "QuestionWasAsked"
+    | QuestionWasCompleted(_) => "QuestionWasCompleted"
+    | QuizWasPublished(_) => "QuizWasPublished"
+    | GameWasOpened(_) => "GameWasOpened"
+    | GameWasCancelled(_) => "GameWasCancelled"
+    | GameWasStarted(_) => "GameWasStarted"
+    | GameWasFinished(_) => "GameWasFinished"
+    | TimeHasExpired(_) => "TimeHasExpired"
+    };
+  let payload =
+    switch (event.type_) {
+    | AnswerWasGiven({gameId, questionId, playerId, answer}) =>
+      `Assoc([
+        ("game_id", `String(gameId |> Uuid.to_string)),
+        ("question_id", `String(questionId |> Uuid.to_string)),
+        ("player_id", `String(playerId |> Uuid.to_string)),
+        ("answer", `String(answer)),
+      ])
+    | PlayerJoinedGame({gameId, playerId}) =>
+      `Assoc([
+        ("game_id", `String(gameId |> Uuid.to_string)),
+        ("player_id", `String(playerId |> Uuid.to_string)),
+      ])
+    | PlayerHasRegistered({playerId, lastName, firstName}) =>
+      `Assoc([
+        ("player_id", `String(playerId |> Uuid.to_string)),
+        ("last_name", `String(lastName)),
+        ("first_name", `String(firstName)),
+      ])
+    | QuizWasCreated({quizTitle, quizId, ownerId}) =>
+      `Assoc([
+        ("quiz_title", `String(quizTitle)),
+        ("quiz_id", `String(quizId |> Uuid.to_string)),
+        ("owner_id", `String(ownerId |> Uuid.to_string)),
+      ])
+    | QuestionAddedToQuiz({quizId, questionId, question, answer}) =>
+      `Assoc([
+        ("quiz_id", `String(quizId |> Uuid.to_string)),
+        ("question_id", `String(questionId |> Uuid.to_string)),
+        ("question", `String(question)),
+        ("answer", `String(answer)),
+      ])
+    | QuestionWasAsked({gameId, questionId}) =>
+      `Assoc([
+        ("game_id", `String(gameId |> Uuid.to_string)),
+        ("question_id", `String(questionId |> Uuid.to_string)),
+      ])
+    | QuestionWasCompleted({gameId, questionId}) =>
+      `Assoc([
+        ("game_id", `String(gameId |> Uuid.to_string)),
+        ("question_id", `String(questionId |> Uuid.to_string)),
+      ])
+    | QuizWasPublished({quizId}) =>
+      `Assoc([("quiz_id", `String(quizId |> Uuid.to_string))])
+    | GameWasOpened({quizId, gameId}) =>
+      `Assoc([
+        ("quiz_id", `String(quizId |> Uuid.to_string)),
+        ("game_id", `String(gameId |> Uuid.to_string)),
+      ])
+    | GameWasCancelled({gameId}) =>
+      `Assoc([("game_id", `String(gameId |> Uuid.to_string))])
+    | GameWasStarted({gameId}) =>
+      `Assoc([("game_id", `String(gameId |> Uuid.to_string))])
+    | GameWasFinished({gameId}) =>
+      `Assoc([("game_id", `String(gameId |> Uuid.to_string))])
+    | TimeHasExpired({gameId, questionId, playerId}) =>
+      `Assoc([
+        ("game_id", `String(gameId |> Uuid.to_string)),
+        ("question_id", `String(questionId |> Uuid.to_string)),
+        ("player_id", `String(playerId |> Uuid.to_string)),
+      ])
+    };
+  `Assoc([
+    ("id", `String(Uuid.to_string(event.id))),
+    ("type", `String(stringType)),
+    ("timestamp", `String("TODO")),
+    ("payload", payload),
+  ])
+};

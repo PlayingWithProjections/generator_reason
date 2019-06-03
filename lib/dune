@@ -2,6 +2,6 @@
   (name lib)
   (flags (:standard -w +A-42-48 -warn-error +A-3-44))
   (public_name quizzy-stream)
-  (libraries console.lib pastel.lib calendar uuidm base)
+  (libraries console.lib pastel.lib calendar uuidm base yojson)
 	(preprocess (pps ppx_deriving.std))
   )

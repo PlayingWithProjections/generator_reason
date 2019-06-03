@@ -180,12 +180,28 @@ let playGame = (world, timestamp) => {
                     },
                   players,
                 );
-              responseEvents @ [questionEvent, ...events];
+              [
+                Events.create(
+                  ~timestamp,
+                  ~type_=
+                    Events.QuestionWasCompleted({
+                      gameId,
+                      questionId: question.World.Quiz.id,
+                    }),
+                ),
+                ...responseEvents @ [questionEvent, ...events],
+              ];
             },
           ~init=events,
           quiz.World.Quiz.questions,
         );
-      events;
+      [
+        Events.create(
+          ~timestamp,
+          ~type_=Events.GameWasFinished({gameId: gameId}),
+        ),
+        ...events,
+      ];
     };
 
   events;
@@ -262,7 +278,7 @@ let handleTick = (timestamp, world) => {
 };
 
 let rec run = (timestamp, events, state) =>
-  if (timestamp <= 250) {
+  if (timestamp <= 1000) {
     let outcomes = handleTick(timestamp, state.State.world);
     let (newState, newEvents) =
       List.fold_left(~f=State.update, ~init=(state, []), outcomes);
@@ -273,13 +289,8 @@ let rec run = (timestamp, events, state) =>
 
 let hello = () => {
   let events = run(0, [], State.empty);
-  let _ =
-    List.map(
-      ~f=
-        event =>
-          Events.toJson(event) |> Yojson.Basic.to_string |> Console.Pipe.log,
-      events,
-    );
+  let jsonEvents = List.rev_map(~f=Events.toJson, events);
   Console.log(List.length(events));
+  Yojson.Basic.to_file("data/0.json", `List(jsonEvents));
   ();
 };

@@ -139,10 +139,12 @@ let toJson = event => {
         ("player_id", `String(playerId |> Uuid.to_string)),
       ])
     };
+  let timestamp = CalendarLib.Calendar.Precise.from_unixfloat(float_of_int(event.timestamp))
+    |> CalendarLib.Printer.Precise_Calendar.sprint("%iT%T%z");
   `Assoc([
     ("id", `String(Uuid.to_string(event.id))),
     ("type", `String(stringType)),
-    ("timestamp", `String("TODO")),
+    ("timestamp", `String(timestamp)),
     ("payload", payload),
   ])
 };

@@ -1,47 +1,60 @@
 [@deriving show]
-type event =
+type event = {
+  id: Uuid.t,
+  timestamp: int,
+  type_: payload,
+}
+and payload =
   | PlayerHasRegistered{
       playerId: Uuid.t,
       lastName: string,
       firstName: string,
-      timeStamp: int,
     }
   | QuizWasCreated{
-      id: Uuid.t,
+      quizId: Uuid.t,
       ownerId: Uuid.t,
-      timeStamp: int,
       quizTitle: string,
     }
   | QuestionAddedToQuiz{
-      id: Uuid.t,
       quizId: Uuid.t,
+      questionId: Uuid.t,
       question: string,
       answer: string,
-      timeStamp: int,
     }
-  | QuizWasPublished{
-      id: Uuid.t,
-      quizId: Uuid.t,
-      timeStamp: int,
-    }
+  | QuizWasPublished{quizId: Uuid.t}
   | GameWasOpened{
       quizId: Uuid.t,
+      gameId: Uuid.t,
+    }
+  | GameWasCancelled{
+      gameId: Uuid.t,
+    }
+  | GameWasStarted{
       gameId: Uuid.t,
     }
   | PlayerJoinedGame{
       playerId: Uuid.t,
       gameId: Uuid.t,
     }
-  | GameWasCancelled{
-      id: Uuid.t,
-      gameId: Uuid.t,
-    }
-  | GameWasStarted{
-      id: Uuid.t,
-      gameId: Uuid.t,
-    }
   | QuestionWasAsked{
-      id: Uuid.t,
       gameId: Uuid.t,
       questionId: Uuid.t,
+    }
+  | TimeHasExperid{
+      questionId: Uuid.t,
+      playerId: Uuid.t,
+      gameId: Uuid.t,
+    }
+  | GameWasFinished{gameId: Uuid.t}
+  | AnswerWasGiven{
+      questionId: Uuid.t,
+      playerId: Uuid.t,
+      gameId: Uuid.t,
+      answer: string,
+    }
+  | QuestionWasCompleted{
+      questionId: Uuid.t,
+      gameId: Uuid.t,
     };
+
+let create = (~timestamp, ~type_) => {id: Uuid.generateId(), type_, timestamp};

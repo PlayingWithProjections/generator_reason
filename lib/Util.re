@@ -1,6 +1,4 @@
 open! Base;
-open Events;
-
 // Check the TODO later down
 // Then we need to make sure timestamps work correctly
 // + start using distributions for different kind of players
@@ -20,7 +18,7 @@ module Quiz = {
             {
               World.Quiz.question: "Some random question",
               answer: "Some answer",
-              id: Uuid.generateId()
+              id: Uuid.generateId(),
             },
             ...questions,
           ],
@@ -28,39 +26,52 @@ module Quiz = {
       };
     generate(0, []);
   };
-  let createQuiz = (ownerId, timeStamp) => {
+  let createQuiz = (ownerId, timestamp) => {
     let quizId = Uuid.generateId();
     let questions = generateRandomAmountOfQuestions();
     (
       World.AddQuiz(World.Quiz.create(~id=quizId, ~questions)),
-      [QuizWasCreated({id: quizId, ownerId, timeStamp, quizTitle: "Todo"})]
+      [
+        Events.create(
+          ~timestamp,
+          ~type_=Events.QuizWasCreated({quizId, ownerId, quizTitle: "Todo"}),
+        ),
+      ]
       @ List.map(
           ~f=
             ({World.Quiz.question, answer, id}) =>
-              QuestionAddedToQuiz({
-                id,
-                quizId,
-                question,
-                answer,
-                timeStamp,
-              }),
+              Events.create(
+                ~timestamp,
+                ~type_=
+                  Events.QuestionAddedToQuiz({
+                    quizId,
+                    questionId: id,
+                    question,
+                    answer,
+                  }),
+              ),
           questions,
         )
-      @ [QuizWasPublished({id: Uuid.generateId(), quizId, timeStamp})],
+      @ [
+        Events.create(
+          ~timestamp,
+          ~type_=Events.QuizWasPublished({quizId: quizId}),
+        ),
+      ],
     );
   };
 };
 
 module State = {
   type t = {
-    events: list(event),
+    events: list(Events.event),
     world: World.t,
   };
 
   type outcome =
     | NothingChanged
     | Update{
-        events: list(event),
+        events: list(Events.event),
         worldUpdates: list(World.update),
       };
   let empty = {events: [], world: World.empty};
@@ -79,40 +90,42 @@ module State = {
   };
 };
 
-let playGame = world => {
+let playGame = (world, timestamp) => {
   let quiz = World.pickQuiz(world);
   let gameId = Uuid.generateId();
-  let events = [GameWasOpened({quizId: quiz.World.Quiz.id, gameId})];
+  let events = [Events.create(~timestamp, ~type_=Events.GameWasOpened({quizId: quiz.World.Quiz.id, gameId}))];
   let playersJoining = World.playersThatJoinAGame(world);
   let events =
     switch (playersJoining) {
     // TODO did we have a rule that at least x amount of players have to join?
-    | [] => [GameWasCancelled({id: Uuid.generateId(), gameId}), ...events]
+    | [] => [Events.create(~timestamp, ~type_=Events.GameWasCancelled({gameId: gameId})), ...events]
     | players =>
       let events =
         List.fold_left(
           ~f=
             (events, player) =>
               [
-                PlayerJoinedGame({playerId: player.World.Player.id, gameId}),
+                Events.create(~timestamp, ~type_=Events.PlayerJoinedGame({playerId: player.World.Player.id, gameId})),
                 ...events,
               ],
           ~init=events,
           players,
         );
       let events = [
-        GameWasStarted({id: Uuid.generateId(), gameId}),
+        Events.create(~timestamp, ~type_=Events.GameWasStarted({gameId: gameId})),
         ...events,
       ];
       let events =
         List.fold_left(
-          ~f=(events, question) => {
-						[
-							QuestionWasAsked{id: Uuid.generateId(), gameId, questionId: question.World.Quiz.id}
-							,...events
-						]
-
-          },
+          ~f=
+            (events, question) =>
+              [
+                Events.create(~timestamp, ~type_=Events.QuestionWasAsked({
+                  gameId,
+                  questionId: question.World.Quiz.id,
+                })),
+                ...events,
+              ],
           ~init=events,
           quiz.World.Quiz.questions,
         );
@@ -132,30 +145,29 @@ let playGame = world => {
 };
 
 module Player = {
-  let create = timeStamp => {
+  let create = timestamp => {
     let playerId = Uuid.generateId();
     (
       World.AddPlayer(World.Player.create(~id=playerId)),
-      PlayerHasRegistered({
+      Events.create(~timestamp, ~type_=Events.PlayerHasRegistered({
         playerId,
         firstName: "Fix",
         lastName: "Me",
-        timeStamp,
-      }),
+      })),
     );
   };
-  let handler = (player, timeStamp, world) => {
+  let handler = (player, timestamp, world) => {
     let quizWasCreatedEvents =
       if (Distribution.happens(Distribution.PerDay(50))) {
         let (worldUpdate, events) =
-          Quiz.createQuiz(player.World.Player.id, timeStamp);
+          Quiz.createQuiz(player.World.Player.id, timestamp);
         State.Update({events, worldUpdates: [worldUpdate]});
       } else {
         State.NothingChanged;
       };
     let gameWasOpenedEvents =
       if (Distribution.happens(Distribution.PerDay(10))) {
-        let events = playGame(world);
+        let events = playGame(world, timestamp);
         State.Update({events, worldUpdates: []});
       } else {
         State.NothingChanged;
@@ -164,10 +176,10 @@ module Player = {
   };
 };
 
-let worldHandler = (timeStamp, _world) => {
+let worldHandler = (timestamp, _world) => {
   [
     if (Distribution.happens(Distribution.PerDay(50))) {
-      let (player, playerHasRegistered) = Player.create(timeStamp);
+      let (player, playerHasRegistered) = Player.create(timestamp);
       State.Update({events: [playerHasRegistered], worldUpdates: [player]});
     } else {
       State.NothingChanged;
@@ -175,9 +187,9 @@ let worldHandler = (timeStamp, _world) => {
   ];
 };
 
-let playerHandler = (timeStamp, world) => {
+let playerHandler = (timestamp, world) => {
   List.map(
-    ~f=player => Player.handler(player, timeStamp, world),
+    ~f=player => Player.handler(player, timestamp, world),
     World.activePlayers(world),
   )
   |> List.concat;
@@ -185,16 +197,16 @@ let playerHandler = (timeStamp, world) => {
 
 let handlers = [worldHandler, playerHandler];
 
-let handleTick = (timeStamp, world) => {
-  List.map(~f=handler => handler(timeStamp, world), handlers) |> List.concat;
+let handleTick = (timestamp, world) => {
+  List.map(~f=handler => handler(timestamp, world), handlers) |> List.concat;
 };
 
-let rec run = (timeStamp, events, state) =>
-  if (timeStamp <= 100) {
-    let outcomes = handleTick(timeStamp, state.State.world);
+let rec run = (timestamp, events, state) =>
+  if (timestamp <= 100) {
+    let outcomes = handleTick(timestamp, state.State.world);
     let (newState, newEvents) =
       List.fold_left(~f=State.update, ~init=(state, []), outcomes);
-    run(timeStamp + 1, newEvents @ events, newState);
+    run(timestamp + 1, newEvents @ events, newState);
   } else {
     state.State.events;
   };
@@ -202,7 +214,7 @@ let rec run = (timeStamp, events, state) =>
 let hello = () => {
   let events = run(0, [], State.empty);
   let _ =
-    List.map(~f=event => show_event(event) |> Console.Pipe.log, events);
+    List.map(~f=event => Events.show_event(event) |> Console.Pipe.log, events);
   Console.log(List.length(events));
   ();
 };

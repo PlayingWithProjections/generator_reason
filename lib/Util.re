@@ -1,5 +1,9 @@
 open! Base;
 
+let tenMinutes = 60 * 10;
+let fiveMinutes = 60 * 5;
+let twoMinutes = 60 * 2;
+
 module Quiz = {
   let generateRandomAmountOfQuestions = () => {
     let nbOfQuestions = Random.int(10);
@@ -24,31 +28,38 @@ module Quiz = {
   let createQuiz = (ownerId, timestamp) => {
     let quizId = Uuid.generateId();
     let questions = generateRandomAmountOfQuestions();
+    let timestamp = timestamp + Random.int(fiveMinutes);
     let createEvent =
       Events.create(
         ~timestamp,
         ~type_=Events.QuizWasCreated({quizId, ownerId, quizTitle: "Todo"}),
       );
-    let events =
+    let (events, timestamp) =
       List.fold_left(
         ~f=
-          (events, {World.Quiz.question, answer, id}) =>
-            [
-              Events.create(
-                ~timestamp,
-                ~type_=
-                  Events.QuestionAddedToQuiz({
-                    quizId,
-                    questionId: id,
-                    question,
-                    answer,
-                  }),
-              ),
-              ...events,
-            ],
-        ~init=[createEvent],
+          ((events, timestamp), {World.Quiz.question, answer, id}) => {
+            let timestamp = timestamp + Random.int(tenMinutes);
+            (
+              [
+                Events.create(
+                  ~timestamp,
+                  ~type_=
+                    Events.QuestionAddedToQuiz({
+                      quizId,
+                      questionId: id,
+                      question,
+                      answer,
+                    }),
+                ),
+                ...events,
+              ],
+              timestamp,
+            );
+          },
+        ~init=([createEvent], timestamp),
         questions,
       );
+    let timestamp = timestamp + Random.int(fiveMinutes);
     let publishEvent =
       Events.create(
         ~timestamp,
@@ -91,8 +102,11 @@ module State = {
 };
 
 let playGame = (world, timestamp) => {
+  // A game starts or cancels after five minutes
+  // and you have 2 minutes to answer a question
   let quiz = World.pickQuiz(world);
   let gameId = Uuid.generateId();
+  let timestamp = timestamp + Random.int(fiveMinutes);
   let events = [
     Events.create(
       ~timestamp,
@@ -100,12 +114,13 @@ let playGame = (world, timestamp) => {
     ),
   ];
   let playersJoining = World.playersThatJoinAGame(world);
+  let timestampPlusFiveMinutes = timestamp + fiveMinutes;
   let events =
     switch (playersJoining) {
     // TODO did we have a rule that at least x amount of players have to join?
     | [] => [
         Events.create(
-          ~timestamp,
+          ~timestamp=timestampPlusFiveMinutes,
           ~type_=Events.GameWasCancelled({gameId: gameId}),
         ),
         ...events,
@@ -117,7 +132,7 @@ let playGame = (world, timestamp) => {
             (events, player) =>
               [
                 Events.create(
-                  ~timestamp,
+                  ~timestamp=timestamp + Random.int(fiveMinutes),
                   ~type_=
                     Events.PlayerJoinedGame({
                       playerId: player.World.Player.id,
@@ -131,15 +146,16 @@ let playGame = (world, timestamp) => {
         );
       let events = [
         Events.create(
-          ~timestamp,
+          ~timestamp=timestampPlusFiveMinutes,
           ~type_=Events.GameWasStarted({gameId: gameId}),
         ),
         ...events,
       ];
-      let events =
+      let timestamp = timestampPlusFiveMinutes;
+      let (events, timestamp) =
         List.fold_left(
           ~f=
-            (events, question) => {
+            ((events, timestamp), question) => {
               let questionEvent =
                 Events.create(
                   ~timestamp,
@@ -176,23 +192,29 @@ let playGame = (world, timestamp) => {
                             playerId: player.World.Player.id,
                           })
                         };
+                      // TODO the speed of the answer should depend on the type of player
+                      let timestamp = timestamp + Random.int(twoMinutes);
                       Events.create(~timestamp, ~type_);
                     },
                   players,
                 );
-              [
-                Events.create(
-                  ~timestamp,
-                  ~type_=
-                    Events.QuestionWasCompleted({
-                      gameId,
-                      questionId: question.World.Quiz.id,
-                    }),
-                ),
-                ...responseEvents @ [questionEvent, ...events],
-              ];
+              let timestamp = timestamp + twoMinutes;
+              (
+                [
+                  Events.create(
+                    ~timestamp,
+                    ~type_=
+                      Events.QuestionWasCompleted({
+                        gameId,
+                        questionId: question.World.Quiz.id,
+                      }),
+                  ),
+                  ...responseEvents @ [questionEvent, ...events],
+                ],
+                timestamp,
+              );
             },
-          ~init=events,
+          ~init=(events, timestamp),
           quiz.World.Quiz.questions,
         );
       [
@@ -210,6 +232,7 @@ let playGame = (world, timestamp) => {
 module Player = {
   let create = timestamp => {
     let playerId = Uuid.generateId();
+    let timestamp = timestamp + Random.int(tenMinutes);
     (
       World.AddPlayer(World.Player.create(~id=playerId)),
       Events.create(
@@ -223,6 +246,7 @@ module Player = {
       ),
     );
   };
+
   let handler = (player, timestamp, world) => {
     let quizWasCreatedEvents =
       if (Distribution.happens(Distribution.PerDay(50))) {
@@ -278,8 +302,6 @@ let timestampRange = period => {
   );
 };
 
-let tenMinutes = 60 * 10;
-
 let rec run = (timestamp, endTimestamp, events, state) =>
   if (timestamp <= endTimestamp) {
     let outcomes = handleTick(timestamp, state.State.world);
@@ -291,7 +313,7 @@ let rec run = (timestamp, endTimestamp, events, state) =>
   };
 
 let hello = () => {
-  let period = CalendarLib.Calendar.Precise.Period.day(2);
+  let period = CalendarLib.Calendar.Precise.Period.day(1);
   let (startTimestamp, endTimestamp) = timestampRange(period);
   let events = run(startTimestamp, endTimestamp, [], State.empty);
   let jsonEvents = List.rev_map(~f=Events.toJson, events);

@@ -28,7 +28,7 @@ module Player = {
     id: Uuid.t,
     playerType,
   };
-  let create = (~id) => {id, playerType: Normal};
+  let create = (~id, ~playerType) => {id, playerType};
   let joinGameDistribution = _player => Distribution.OneIn(10);
   let answerQuestion = player =>
     switch (player.playerType) {
@@ -57,6 +57,7 @@ module Game = {
 };
 
 type t = {
+	playerDistribution: Distribution.D.t(Player.playerType),
   players: list(Player.t),
   quizzes: list(Quiz.t),
   openGames: Map.t(Uuid.t, Game.t, Uuid.comparator_witness),
@@ -68,7 +69,7 @@ type update =
   | OpenGame(Game.t)
   | JoinGame(Uuid.t, Player.t);
 
-let empty = {players: [], quizzes: [], openGames: Map.empty((module Uuid))};
+let init = (playerDistribution) => {playerDistribution, players: [], quizzes: [], openGames: Map.empty((module Uuid))};
 
 let update = (world, updates) => {
   List.fold_left(
@@ -98,6 +99,13 @@ let update = (world, updates) => {
     updates,
   );
 };
+
+let createPlayer = (world) => {
+	let playerType = Distribution.D.pick(world.playerDistribution);
+	let id = Uuid.generateId();
+	let player = Player.create(~id, ~playerType);
+	(id, AddPlayer(player))
+}
 
 let activePlayers = world => world.players;
 

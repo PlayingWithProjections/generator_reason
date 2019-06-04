@@ -4,7 +4,7 @@
   "license": "MIT",
   "esy": {
     "build": "refmterr dune build -p #{self.name}",
-    "NOTE": "Optional release Section. Customizes result of `esy release`",
+    "buildsInSource": "_build",
     "release": { "bin": [ "Hello" ] }
   },
   "scripts": { "test": "esy x Hello", "doc": "esy dune build @doc" },

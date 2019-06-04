@@ -22,6 +22,7 @@ module Quiz = {
 
 module Player = {
   type playerType =
+    | NeverPlayer
     | Normal
     | Bot;
   type t = {
@@ -33,6 +34,7 @@ module Player = {
   let answerQuestion = player =>
     switch (player.playerType) {
     | Bot => `AnswerCorrectly
+    | NeverPlayer => `AnswerTimeout
     | Normal =>
       open! Poly;
       switch (Random.float(1.)) {
@@ -57,55 +59,54 @@ module Game = {
 };
 
 type t = {
-	playerDistribution: Distribution.D.t(Player.playerType),
+  playerDistribution: Distribution.D.t(Player.playerType),
   players: list(Player.t),
   quizzes: list(Quiz.t),
-  openGames: Map.t(Uuid.t, Game.t, Uuid.comparator_witness),
 };
 
-type update =
-  | AddQuiz(Quiz.t)
-  | AddPlayer(Player.t)
-  | OpenGame(Game.t)
-  | JoinGame(Uuid.t, Player.t);
-
-let init = (playerDistribution) => {playerDistribution, players: [], quizzes: [], openGames: Map.empty((module Uuid))};
-
-let update = (world, updates) => {
-  List.fold_left(
-    ~f=
-      (world, update) =>
-        switch (update) {
-        | AddQuiz(quiz) => {...world, quizzes: [quiz, ...world.quizzes]}
-        | AddPlayer(player) => {
-            ...world,
-            players: [player, ...world.players],
-          }
-        | OpenGame(game) => {
-            ...world,
-            openGames:
-              Map.add_exn(world.openGames, ~key=game.Game.id, ~data=game),
-          }
-        | JoinGame(gameId, player) =>
-          let game = Map.find_exn(world.openGames, gameId);
-          let game = Game.join(~game, ~player);
-          {
-            ...world,
-            openGames:
-              Map.set(world.openGames, ~key=game.Game.id, ~data=game),
-          };
-        },
-    ~init=world,
-    updates,
-  );
+let init = playerDistribution => {
+  playerDistribution,
+  players: [],
+  quizzes: [],
 };
 
-let createPlayer = (world) => {
-	let playerType = Distribution.D.pick(world.playerDistribution);
-	let id = Uuid.generateId();
-	let player = Player.create(~id, ~playerType);
-	(id, AddPlayer(player))
-}
+let createPlayer = world => {
+  let playerType = Distribution.D.pick(world.playerDistribution);
+  let id = Uuid.generateId();
+  let player = Player.create(~id, ~playerType);
+  switch (player.Player.playerType) {
+  | Player.NeverPlayer => (id, world)
+  | Player.Normal
+  | Player.Bot => (id, {...world, players: [player, ...world.players]})
+  };
+};
+
+let createQuiz = world => {
+  let generateRandomAmountOfQuestions = () => {
+    let nbOfQuestions = Random.int(10);
+    let rec generate = (i, questions) =>
+      if (i > nbOfQuestions) {
+        questions;
+      } else {
+        generate(
+          i + 1,
+          [
+            {
+              Quiz.question: "Some random question",
+              answer: "Some answer",
+              id: Uuid.generateId(),
+            },
+            ...questions,
+          ],
+        );
+      };
+    generate(0, []);
+  };
+  let id = Uuid.generateId();
+  let questions = generateRandomAmountOfQuestions();
+  let quiz = Quiz.create(~id, ~questions);
+  (id, questions, {...world, quizzes: [quiz, ...world.quizzes]});
+};
 
 let activePlayers = world => world.players;
 

@@ -5,29 +5,8 @@ let fiveMinutes = 60 * 5;
 let twoMinutes = 60 * 2;
 
 module Quiz = {
-  let generateRandomAmountOfQuestions = () => {
-    let nbOfQuestions = Random.int(10);
-    let rec generate = (i, questions) =>
-      if (i > nbOfQuestions) {
-        questions;
-      } else {
-        generate(
-          i + 1,
-          [
-            {
-              World.Quiz.question: "Some random question",
-              answer: "Some answer",
-              id: Uuid.generateId(),
-            },
-            ...questions,
-          ],
-        );
-      };
-    generate(0, []);
-  };
-  let createQuiz = (ownerId, timestamp) => {
-    let quizId = Uuid.generateId();
-    let questions = generateRandomAmountOfQuestions();
+  let createQuiz = (ownerId, timestamp, world) => {
+    let (quizId, questions, world) = World.createQuiz(world);
     let timestamp = timestamp + Random.int(fiveMinutes);
     let createEvent =
       Events.create(
@@ -66,10 +45,7 @@ module Quiz = {
         ~type_=Events.QuizWasPublished({quizId: quizId}),
       );
 
-    (
-      World.AddQuiz(World.Quiz.create(~id=quizId, ~questions)),
-      [publishEvent, ...events],
-    );
+    (world, [publishEvent, ...events]);
   };
 };
 
@@ -83,18 +59,18 @@ module State = {
     | NothingChanged
     | Update{
         events: list(Events.event),
-        worldUpdates: list(World.update),
+        world: World.t,
       };
-  let init(playerDistribution) = {events: [], world: World.init(playerDistribution)};
+  let init = playerDistribution => {
+    events: [],
+    world: World.init(playerDistribution),
+  };
 
   let update = ((state, newEvents), outcome) => {
     switch (outcome) {
     | NothingChanged => (state, newEvents)
-    | Update({events, worldUpdates}) => (
-        {
-          events: events @ state.events,
-          world: World.update(state.world, worldUpdates),
-        },
+    | Update({events, world}) => (
+        {events: events @ state.events, world},
         events @ newEvents,
       )
     };
@@ -234,7 +210,7 @@ module Player = {
     let timestamp = timestamp + Random.int(tenMinutes);
     let (playerId, worldUpdate) = World.createPlayer(world);
     (
-    	worldUpdate,
+      worldUpdate,
       Events.create(
         ~timestamp,
         ~type_=
@@ -250,16 +226,16 @@ module Player = {
   let handler = (player, timestamp, world) => {
     let quizWasCreatedEvents =
       if (Distribution.happens(Distribution.PerDay(50))) {
-        let (worldUpdate, events) =
-          Quiz.createQuiz(player.World.Player.id, timestamp);
-        State.Update({events, worldUpdates: [worldUpdate]});
+        let (world, events) =
+          Quiz.createQuiz(player.World.Player.id, timestamp, world);
+        State.Update({events, world});
       } else {
         State.NothingChanged;
       };
     let gameWasOpenedEvents =
       if (Distribution.happens(Distribution.PerDay(10))) {
         let events = playGame(world, timestamp);
-        State.Update({events, worldUpdates: []});
+        State.Update({events, world});
       } else {
         State.NothingChanged;
       };
@@ -270,8 +246,8 @@ module Player = {
 let worldHandler = (timestamp, world) => {
   [
     if (Distribution.happens(Distribution.PerDay(50))) {
-      let (player, playerHasRegistered) = Player.create(timestamp, world);
-      State.Update({events: [playerHasRegistered], worldUpdates: [player]});
+      let (world, playerHasRegistered) = Player.create(timestamp, world);
+      State.Update({events: [playerHasRegistered], world});
     } else {
       State.NothingChanged;
     },
@@ -313,15 +289,18 @@ let rec run = (timestamp, endTimestamp, events, state) =>
   };
 
 let hello = () => {
-  let period = CalendarLib.Calendar.Precise.Period.day(5);
+  let period = CalendarLib.Calendar.Precise.Period.day(100);
   let (startTimestamp, endTimestamp) = timestampRange(period);
   let playerDistribution = {
-  	open Distribution;
-  	D.empty()
-  		|> D.add(~i=5, ~outcome=World.Player.Bot)
-  		|> D.rest(~outcome=World.Player.Normal)
-			};
-  let events = run(startTimestamp, endTimestamp, [], State.init(playerDistribution));
+    Distribution.(
+      D.empty()
+      |> D.add(~i=5, ~outcome=World.Player.Bot)
+      |> D.add(~i=10, ~outcome=World.Player.NeverPlayer)
+      |> D.rest(~outcome=World.Player.Normal)
+    );
+  };
+  let events =
+    run(startTimestamp, endTimestamp, [], State.init(playerDistribution));
   let jsonEvents = List.rev_map(~f=Events.toJson, events);
   Console.log(List.length(events));
   Yojson.Basic.to_file("data/0.json", `List(jsonEvents));

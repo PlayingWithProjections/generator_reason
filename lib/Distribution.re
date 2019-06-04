@@ -12,7 +12,7 @@ let happens = frequency => {
 };
 
 module D = {
-	/**
+  /**
 	 * A module for easily creating distributions that you want to pick.
 	 * An example:
 	 *     empty()

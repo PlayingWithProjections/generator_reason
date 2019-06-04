@@ -23,3 +23,6 @@ This is a working list, more todos will probably be needed
 * [ ] implement different player types (fast answers, always correct, slow, only play one time, top players, only create a quiz, never play, bots,...)
 * [ ] implement random names and questions with answers
 * [ ] implement marketing campaign
+* [ ] add command line interface to select different scenarios
+* [ ] make binaries for linux, mac and windows
+* [ ] benchmark: goal stay under 10 seconds for 1milion events

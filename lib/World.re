@@ -24,25 +24,27 @@ module Player = {
   type playerType =
     | NeverPlayer
     | Normal
-    | Bot;
+    | BotAlwasyCorrect;
   type t = {
     id: Uuid.t,
     playerType,
   };
   let create = (~id, ~playerType) => {id, playerType};
   let joinGameDistribution = _player => Distribution.OneIn(10);
-  let answerQuestion = player =>
+  let answerQuestion = player => {
+  	let speed = Random.int(60 * 2);
     switch (player.playerType) {
-    | Bot => `AnswerCorrectly
+    | BotAlwasyCorrect => `AnswerCorrectly(speed)
     | NeverPlayer => `AnswerTimeout
     | Normal =>
       open! Poly;
       switch (Random.float(1.)) {
-      | x when x >= 0.9 => `AnswerCorrectly
+      | x when x >= 0.9 => `AnswerCorrectly(speed)
       | x when x >= 0.7 => `AnswerTimeout
-      | _ => `AnswerIncorrectly
+      | _ => `AnswerIncorrectly(speed)
       };
     };
+	};
 };
 
 module Game = {
@@ -77,7 +79,7 @@ let createPlayer = world => {
   switch (player.Player.playerType) {
   | Player.NeverPlayer => (id, world)
   | Player.Normal
-  | Player.Bot => (id, {...world, players: [player, ...world.players]})
+  | Player.BotAlwasyCorrect => (id, {...world, players: [player, ...world.players]})
   };
 };
 

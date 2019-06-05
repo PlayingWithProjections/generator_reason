@@ -145,16 +145,22 @@ let playGame = (world, timestamp) => {
                 List.map(
                   ~f=
                     player => {
+                    	let answerType = World.Player.answerQuestion(player);
+                    	let timestamp = switch answerType {
+                    		| `AnswerCorrectly(speed) => timestamp + speed; 
+                    		| `AnswerIncorrectly(speed) => timestamp + speed; 
+                    		| `AnswerTimeout => timestamp + twoMinutes; 
+											};
                       let type_ =
-                        switch (World.Player.answerQuestion(player)) {
-                        | `AnswerCorrectly =>
+                        switch (answerType) {
+                        | `AnswerCorrectly(_) =>
                           Events.AnswerWasGiven({
                             questionId: question.World.Quiz.id,
                             gameId,
                             playerId: player.World.Player.id,
                             answer: question.World.Quiz.answer,
                           })
-                        | `AnswerIncorrectly =>
+                        | `AnswerIncorrectly(_) =>
                           Events.AnswerWasGiven({
                             questionId: question.World.Quiz.id,
                             gameId,
@@ -168,8 +174,6 @@ let playGame = (world, timestamp) => {
                             playerId: player.World.Player.id,
                           })
                         };
-                      // TODO the speed of the answer should depend on the type of player
-                      let timestamp = timestamp + Random.int(twoMinutes);
                       Events.create(~timestamp, ~type_);
                     },
                   players,
@@ -294,7 +298,7 @@ let hello = () => {
   let playerDistribution = {
     Distribution.(
       D.empty()
-      |> D.add(~i=5, ~outcome=World.Player.Bot)
+      |> D.add(~i=5, ~outcome=World.Player.BotAlwasyCorrect)
       |> D.add(~i=10, ~outcome=World.Player.NeverPlayer)
       |> D.rest(~outcome=World.Player.Normal)
     );

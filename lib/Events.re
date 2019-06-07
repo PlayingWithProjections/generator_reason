@@ -25,6 +25,7 @@ and payload =
   | GameWasOpened{
       quizId: Uuid.t,
       gameId: Uuid.t,
+      playerId: Uuid.t,
     }
   | GameWasCancelled{gameId: Uuid.t}
   | GameWasStarted{gameId: Uuid.t}
@@ -121,10 +122,11 @@ let toJson = event => {
       ])
     | QuizWasPublished({quizId}) =>
       `Assoc([("quiz_id", `String(quizId |> Uuid.to_string))])
-    | GameWasOpened({quizId, gameId}) =>
+    | GameWasOpened({quizId, gameId, playerId}) =>
       `Assoc([
         ("quiz_id", `String(quizId |> Uuid.to_string)),
         ("game_id", `String(gameId |> Uuid.to_string)),
+        ("player_id", `String(playerId |> Uuid.to_string)),
       ])
     | GameWasCancelled({gameId}) =>
       `Assoc([("game_id", `String(gameId |> Uuid.to_string))])

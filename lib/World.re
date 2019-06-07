@@ -32,7 +32,7 @@ module Player = {
   let create = (~id, ~playerType) => {id, playerType};
   let joinGameDistribution = _player => Distribution.OneIn(10);
   let answerQuestion = player => {
-  	let speed = Random.int(60 * 2);
+    let speed = Random.int(60 * 2);
     switch (player.playerType) {
     | BotAlwasyCorrect => `AnswerCorrectly(speed)
     | NeverPlayer => `AnswerTimeout
@@ -44,7 +44,7 @@ module Player = {
       | _ => `AnswerIncorrectly(speed)
       };
     };
-	};
+  };
 };
 
 module Game = {
@@ -79,7 +79,10 @@ let createPlayer = world => {
   switch (player.Player.playerType) {
   | Player.NeverPlayer => (id, world)
   | Player.Normal
-  | Player.BotAlwasyCorrect => (id, {...world, players: [player, ...world.players]})
+  | Player.BotAlwasyCorrect => (
+      id,
+      {...world, players: [player, ...world.players]},
+    )
   };
 };
 
@@ -110,7 +113,8 @@ let createQuiz = world => {
   (id, questions, {...world, quizzes: [quiz, ...world.quizzes]});
 };
 
-let activePlayers = world => world.players;
+let playersCreatingQuiz = world => world.players;
+let playersOpeningGame = world => world.players;
 
 let playersThatJoinAGame = world =>
   List.filter(

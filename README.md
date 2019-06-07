@@ -34,3 +34,4 @@ This is a working list, more todos will probably be needed
 ## Extra questions
 
 * Reverse engineer some of the gmae mechanics. For example how long before a game starts, how long before a question timeout?
+* changed gameEvent to include the player that opened a game

@@ -77,7 +77,7 @@ module State = {
   };
 };
 
-let playGame = (world, timestamp) => {
+let playGame = (player, world, timestamp) => {
   // A game starts or cancels after five minutes
   // and you have 2 minutes to answer a question
   let quiz = World.pickQuiz(world);
@@ -86,7 +86,12 @@ let playGame = (world, timestamp) => {
   let events = [
     Events.create(
       ~timestamp,
-      ~type_=Events.GameWasOpened({quizId: quiz.World.Quiz.id, gameId}),
+      ~type_=
+        Events.GameWasOpened({
+          quizId: quiz.World.Quiz.id,
+          gameId,
+          playerId: player.World.Player.id,
+        }),
     ),
   ];
   let playersJoining = World.playersThatJoinAGame(world);
@@ -145,12 +150,13 @@ let playGame = (world, timestamp) => {
                 List.map(
                   ~f=
                     player => {
-                    	let answerType = World.Player.answerQuestion(player);
-                    	let timestamp = switch answerType {
-                    		| `AnswerCorrectly(speed) => timestamp + speed; 
-                    		| `AnswerIncorrectly(speed) => timestamp + speed; 
-                    		| `AnswerTimeout => timestamp + twoMinutes; 
-											};
+                      let answerType = World.Player.answerQuestion(player);
+                      let timestamp =
+                        switch (answerType) {
+                        | `AnswerCorrectly(speed) => timestamp + speed
+                        | `AnswerIncorrectly(speed) => timestamp + speed
+                        | `AnswerTimeout => timestamp + twoMinutes
+                        };
                       let type_ =
                         switch (answerType) {
                         | `AnswerCorrectly(_) =>
@@ -226,28 +232,9 @@ module Player = {
       ),
     );
   };
-
-  let handler = (player, timestamp, world) => {
-    let quizWasCreatedEvents =
-      if (Distribution.happens(Distribution.PerDay(50))) {
-        let (world, events) =
-          Quiz.createQuiz(player.World.Player.id, timestamp, world);
-        State.Update({events, world});
-      } else {
-        State.NothingChanged;
-      };
-    let gameWasOpenedEvents =
-      if (Distribution.happens(Distribution.PerDay(10))) {
-        let events = playGame(world, timestamp);
-        State.Update({events, world});
-      } else {
-        State.NothingChanged;
-      };
-    [quizWasCreatedEvents, gameWasOpenedEvents];
-  };
 };
 
-let worldHandler = (timestamp, world) => {
+let createPlayerHandler = (timestamp, world) => {
   [
     if (Distribution.happens(Distribution.PerDay(50))) {
       let (world, playerHasRegistered) = Player.create(timestamp, world);
@@ -257,16 +244,36 @@ let worldHandler = (timestamp, world) => {
     },
   ];
 };
-
-let playerHandler = (timestamp, world) => {
+let createQuizHandler = (timestamp, world) => {
   List.map(
-    ~f=player => Player.handler(player, timestamp, world),
-    World.activePlayers(world),
-  )
-  |> List.concat;
+    ~f=
+      player =>
+        if (Distribution.happens(Distribution.PerDay(50))) {
+          let (world, events) =
+            Quiz.createQuiz(player.World.Player.id, timestamp, world);
+          State.Update({events, world});
+        } else {
+          State.NothingChanged;
+        },
+    World.playersCreatingQuiz(world),
+  );
 };
 
-let handlers = [worldHandler, playerHandler];
+let playGameHandler = (timestamp, world) => {
+  List.map(
+    ~f=
+      player =>
+        if (Distribution.happens(Distribution.PerDay(10))) {
+          let events = playGame(player, world, timestamp);
+          State.Update({events, world});
+        } else {
+          State.NothingChanged;
+        },
+    World.playersOpeningGame(world),
+  );
+};
+
+let handlers = [createPlayerHandler, createQuizHandler, playGameHandler];
 
 let handleTick = (timestamp, world) => {
   List.map(~f=handler => handler(timestamp, world), handlers) |> List.concat;
@@ -293,7 +300,7 @@ let rec run = (timestamp, endTimestamp, events, state) =>
   };
 
 let hello = () => {
-  let period = CalendarLib.Calendar.Precise.Period.day(100);
+  let period = CalendarLib.Calendar.Precise.Period.day(10);
   let (startTimestamp, endTimestamp) = timestampRange(period);
   let playerDistribution = {
     Distribution.(

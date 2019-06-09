@@ -7,11 +7,11 @@
     "buildsInSource": "_build",
     "release": { "bin": [ "Hello" ] }
   },
-  "scripts": { "test": "esy x Hello", "doc": "esy dune build @doc" },
+  "scripts": { "test": "esy x Hello", "doc": "esy dune build @doc", "fmt": "esy dune build @fmt" },
   "dependencies": {
     "@esy-ocaml/reason": "*",
-    "@opam/base": "v0.12.2",
     "@opam/calendar": "2.04",
+    "@opam/core": "v0.11.3",
     "@opam/dune": "*",
     "@opam/ppx_deriving": "4.2.1",
     "@opam/uuidm": "0.9.7",

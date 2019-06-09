@@ -1,12 +1,15 @@
 type frequency =
   | PerDay(int)
+  | PerMonth(int)
   | OneIn(int);
 
 let minutesPerDay = 24 * 60;
+let minutesPerMonth = minutesPerDay * 30;
 
 let happens = frequency => {
   switch (frequency) {
   | PerDay(times) => Random.int(minutesPerDay / times) == 0
+  | PerMonth(times) => Random.int(minutesPerMonth / times) == 0
   | OneIn(x) => Random.int(x) == 0
   };
 };
@@ -57,8 +60,12 @@ module D = {
   };
 };
 
-let listRandom = l => {
-  let length = List.length(l);
-  let i = Random.int(length);
-  List.nth(l, i);
+let randomFromList = l => {
+  switch (l) {
+  | [] => None
+  | _ =>
+    let length = List.length(l);
+    let i = Random.int(length);
+    Some(List.nth(l, i));
+  };
 };

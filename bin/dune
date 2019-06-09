@@ -1,4 +1,4 @@
-(executable
- (name Hello)
- (public_name Hello)
- (libraries lib))
+(executables
+ (names Hello Bench)
+ (public_names Hello Bench)
+ (libraries lib core core_bench))

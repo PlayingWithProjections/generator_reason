@@ -1,2 +1,2 @@
 Console.log("Running Test Program:");
-let () = Lib.Util.hello();
+let () = Lib.Stream.hello();

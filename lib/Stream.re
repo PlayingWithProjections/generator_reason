@@ -276,7 +276,7 @@ let rec run = (timestamp, endTimestamp, events, world) =>
   };
 
 let hello = () => {
-  let period = CalendarLib.Calendar.Precise.Period.day(40);
+  let period = CalendarLib.Calendar.Precise.Period.day(10);
   let (startTimestamp, endTimestamp) = timestampRange(period);
   let playerDistribution = {
     Distribution.(
@@ -288,8 +288,8 @@ let hello = () => {
   };
   let events =
     run(startTimestamp, endTimestamp, [], World.init(playerDistribution));
+  /* Console.log(List.length(events)); */
   let jsonEvents = List.rev_map(~f=Events.toJson, events);
-  Console.log(List.length(events));
-  Yojson.Basic.to_file("data/0.json", `List(jsonEvents));
+  Yojson.Basic.to_file(~len=100000, "data/0.json", `List(jsonEvents));
   ();
 };

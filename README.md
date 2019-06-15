@@ -28,7 +28,7 @@ This is a working list, more todos will probably be needed
 * [ ] implement random names and questions with answers
 * [ ] implement marketing campaign
 * [ ] add command line interface to select different scenarios
-* [ ] make binaries for linux, mac and windows
+* [x] make binaries for linux, mac and windows
 * [ ] benchmark: goal stay under 10 seconds for 1milion events
 
 ## Extra questions

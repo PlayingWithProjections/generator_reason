@@ -1,5 +1,5 @@
 let createDir = (dir) => {
-	let _ = try (Unix.mkdir(dir, 0o640)) {
+	let _ = try (Unix.mkdir(dir, 0o740)) {
 		| Unix.Unix_error(Unix.EEXIST, _, _)	 => ()
 	};
 	()

@@ -38,6 +38,29 @@ This is a working list, more todos will probably be needed
 
 ## Benchmark
 
+Current results show that we have 2 slow parts:
+1. The printing of a datetime to string (https://github.com/ocaml-community/calendar/issues/24)
+2. The writing to json.
+
+Hopefully 1 is fixable. 2 will probably not be easily fixable.
+If we can fix 1, then we can probably land on 1milj events in about 15seconds which should be ok
+
+We're able to fix 1 a bit with using ptime. It might be possible to go even faster with `Core.Date` but haven't found out how to use it yet...
+For example, now with 20 days a full run takes about `566ms`, without to json `210ms` and without outputting the events `40ms`
+
+### Fixing events to json with core unix time
+
+┌─────────────────────────┬────────────┬─────────┬──────────┬──────────┬────────────┐
+│ Name                    │   Time/Run │ mWd/Run │ mjWd/Run │ Prom/Run │ Percentage │
+├─────────────────────────┼────────────┼─────────┼──────────┼──────────┼────────────┤
+│ from_unixfloat calendar │   201.35ns │  47.00w │          │          │      6.53% │
+│ from_unixfloat ptime    │    40.05ns │  19.00w │          │          │      1.30% │
+│ from_unixfloat core     │    29.97ns │  10.00w │          │          │      0.97% │
+│ format calendar         │ 3_082.18ns │ 721.26w │    1.07w │    1.07w │    100.00% │
+│ format ptime            │   963.04ns │ 215.01w │          │          │     31.25% │
+│ format core             │   227.84ns │   5.00w │          │          │      7.39% │
+└─────────────────────────┴────────────┴─────────┴──────────┴──────────┴────────────┘
+
 Ok, so we best keep benchmarking my program, but the overal speed is ok.
 The problem is in the serialization. That's 10times slower.
 (also it's not the writing tot the file I think)
@@ -70,6 +93,32 @@ Converting them to json takes about 350ms total.
 │ simulation │  43.95ms │ 12.13Mw │ 843.93kw │ 843.93kw │    100.00% │
 └────────────┴──────────┴─────────┴──────────┴──────────┴────────────┘
 
+#### Total with core
+
+┌────────────┬──────────┬─────────┬──────────┬──────────┬────────────┐
+│ Name       │ Time/Run │ mWd/Run │ mjWd/Run │ Prom/Run │ Percentage │
+├────────────┼──────────┼─────────┼──────────┼──────────┼────────────┤
+│ simulation │  47.60ms │ 11.88Mw │ 812.76kw │ 812.76kw │    100.00% │
+└────────────┴──────────┴─────────┴──────────┴──────────┴────────────┘
+
+4 runs => 46.44ms to 47.60ms
+
+*with to events*
+
+┌────────────┬──────────┬─────────┬──────────┬──────────┬────────────┐
+│ Name       │ Time/Run │ mWd/Run │ mjWd/Run │ Prom/Run │ Percentage │
+├────────────┼──────────┼─────────┼──────────┼──────────┼────────────┤
+│ simulation │ 177.99ms │ 19.64Mw │   6.07Mw │   6.07Mw │    100.00% │
+└────────────┴──────────┴─────────┴──────────┴──────────┴────────────┘
+
+*full run*
+
+┌────────────┬──────────┬─────────┬──────────┬──────────┬────────────┐
+│ Name       │ Time/Run │ mWd/Run │ mjWd/Run │ Prom/Run │ Percentage │
+├────────────┼──────────┼─────────┼──────────┼──────────┼────────────┤
+│ simulation │ 250.85ms │ 20.04Mw │   7.27Mw │   5.55Mw │    100.00% │
+└────────────┴──────────┴─────────┴──────────┴──────────┴────────────┘
+
 ### Without to json and 100 days
 
 4346368 events
@@ -84,3 +133,7 @@ The file is then 1.4G big.
 ├────────────┼──────────┼──────────┼──────────┼──────────┼────────────┤
 │ simulation │    3.15s │ 533.31Mw │  90.25Mw │  90.25Mw │    100.00% │
 └────────────┴──────────┴──────────┴──────────┴──────────┴────────────┘
+
+#### with core date
+
+including to json = 18.27s (huge improvement)

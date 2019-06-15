@@ -288,7 +288,7 @@ let hello = () => {
   };
   let events =
     run(startTimestamp, endTimestamp, [], World.init(playerDistribution));
-  /* Console.log(List.length(events)); */
+  Console.log(List.length(events));
   let jsonEvents = List.rev_map(~f=Events.toJson, events);
   Yojson.Basic.to_file(~len=100000, "data/0.json", `List(jsonEvents));
   ();

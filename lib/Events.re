@@ -59,6 +59,9 @@ let create = (~timestamp, ~type_) => {
   type_,
   timestamp,
 };
+let toTimestamp = t =>
+  CalendarLib.Calendar.Precise.from_unixfloat(float_of_int(t))
+  |> CalendarLib.Printer.Precise_Calendar.sprint("%iT%T%z");
 
 let toJson = event => {
   let stringType =
@@ -141,11 +144,13 @@ let toJson = event => {
         ("player_id", `String(playerId |> Uuid.to_string)),
       ])
     };
-  let timestamp =
-    CalendarLib.Calendar.Precise.from_unixfloat(
-      float_of_int(event.timestamp),
-    )
-    |> CalendarLib.Printer.Precise_Calendar.sprint("%iT%T%z");
+  let timestamp = {
+  	open Core.Unix;
+  	strftime(gmtime(float_of_int(event.timestamp)), "%FT%TZ");
+	};
+  /* let timestamp = */
+  /*   Core.Option.value_exn(Ptime.of_float_s(float_of_int(event.timestamp))) */
+  /*   |> Ptime.to_rfc3339(~tz_offset_s=0); */
   `Assoc([
     ("id", `String(Uuid.to_string(event.id))),
     ("type", `String(stringType)),

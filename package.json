@@ -19,6 +19,7 @@
     "@opam/core_bench": "v0.11.0",
     "@opam/dune": "*",
     "@opam/ppx_deriving": "4.2.1",
+    "@opam/ptime": "0.8.5",
     "@opam/uuidm": "0.9.7",
     "@opam/yojson": "1.5.0",
     "@reason-native/console": "*",
@@ -35,7 +36,7 @@
   },
   "resolutions": {
     "@opam/reason":
-      "let-def/reason:reason.opam#a74679fd11b940d01a1326bfc5b95d598e285546",
+      "let-def/reason:reason.opam#879d58746b4d74179487e7e3fe96dd2cc553c837",
     "@opam/merlin-lsp":
       "github:ocaml/merlin:merlin-lsp.opam#5af6d2dccc94dd6baad984c725fab3166e96fa7a"
   }

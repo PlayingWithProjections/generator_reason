@@ -1,5 +1,5 @@
 {
-  "checksum": "fd5e04138a3fcb8ff5f03418aa1be72a",
+  "checksum": "f56d06d392abc7c4c40118f786c764bd",
   "root": "quizzy-stream@link-dev:./package.json",
   "node": {
     "refmterr@3.1.10@d41d8cd9": {
@@ -35,7 +35,7 @@
         "@reason-native/pastel@0.2.1@d41d8cd9",
         "@reason-native/console@0.1.0@d41d8cd9",
         "@opam/yojson@opam:1.5.0@890db858",
-        "@opam/uuidm@opam:0.9.7@bf725775",
+        "@opam/uuidm@opam:0.9.7@bf725775", "@opam/ptime@opam:0.8.5@0051d642",
         "@opam/ppx_deriving@opam:4.2.1@7927b93a",
         "@opam/dune@opam:1.10.0@b15ce221",
         "@opam/core_bench@opam:v0.11.0@6ca91623",

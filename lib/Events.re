@@ -145,9 +145,8 @@ let toJson = event => {
       ])
     };
   let timestamp = {
-  	open Core.Unix;
-  	strftime(gmtime(float_of_int(event.timestamp)), "%FT%TZ");
-	};
+    Core.Unix.(strftime(gmtime(float_of_int(event.timestamp)), "%FT%TZ"));
+  };
   /* let timestamp = */
   /*   Core.Option.value_exn(Ptime.of_float_s(float_of_int(event.timestamp))) */
   /*   |> Ptime.to_rfc3339(~tz_offset_s=0); */

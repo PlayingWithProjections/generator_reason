@@ -10,7 +10,7 @@
   "scripts": {
     "test": "esy x Hello",
     "doc": "esy dune build @doc",
-    "fmt": "esy dune build @fmt"
+    "fmt": "esy dune build @fmt --auto-promote"
   },
   "dependencies": {
     "@esy-ocaml/reason": "*",

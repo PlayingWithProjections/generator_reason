@@ -2,13 +2,13 @@ open Core;
 open Core_bench.Std;
 
 let main = () => {
-	let uuid = Lib.Uuid.generateId();
-	let date = CalendarLib.Calendar.from_unixfloat(1000329.);
-	let pdate = Ptime.of_float_s(1000329.);
-	let pdate = Option.value_exn(pdate);
-	let coreDate = Unix.gmtime(1000329.);
-	Console.log(Ptime.to_rfc3339(pdate, ~tz_offset_s=0));
-	Console.log(Unix.strftime(coreDate, "%FT%TZ"));
+  let uuid = Lib.Uuid.generateId();
+  let date = CalendarLib.Calendar.from_unixfloat(1000329.);
+  let pdate = Ptime.of_float_s(1000329.);
+  let pdate = Option.value_exn(pdate);
+  let coreDate = Unix.gmtime(1000329.);
+  Console.log(Ptime.to_rfc3339(pdate, ~tz_offset_s=0));
+  Console.log(Unix.strftime(coreDate, "%FT%TZ"));
   Command.run(
     Bench.make_command([
       Bench.Test.create(~name="simulation", () => ignore(Lib.Stream.hello())),

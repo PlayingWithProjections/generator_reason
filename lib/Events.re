@@ -1,3 +1,14 @@
+let format = ({Unix.tm_year, tm_mon, tm_mday, tm_hour, tm_min, tm_sec, _}: Unix.tm) => {
+  Printf.sprintf(
+    "%d-%02d-%02dT%02d:%02d:%02dZ",
+    1900 + tm_year,
+    tm_mon + 1,
+    tm_mday,
+    tm_hour,
+    tm_min,
+    tm_sec,
+  );
+};
 [@deriving show]
 type event = {
   id: Uuid.t,
@@ -145,8 +156,9 @@ let toJson = event => {
       ])
     };
   let timestamp = {
-    Core.Unix.(strftime(gmtime(float_of_int(event.timestamp)), "%FT%TZ"));
+    Unix.(format(gmtime(float_of_int(event.timestamp))));
   };
+
   /* let timestamp = */
   /*   Core.Option.value_exn(Ptime.of_float_s(float_of_int(event.timestamp))) */
   /*   |> Ptime.to_rfc3339(~tz_offset_s=0); */

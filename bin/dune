@@ -1,4 +1,4 @@
 (executables
- (names Hello Bench)
- (public_names Hello Bench)
- (libraries lib core core_bench ptime))
+ (names Hello)
+ (public_names Hello)
+ (libraries lib ptime))

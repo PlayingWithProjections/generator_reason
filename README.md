@@ -30,6 +30,7 @@ This is a working list, more todos will probably be needed
 * [ ] add command line interface to select different scenarios
 * [x] make binaries for linux, mac and windows
 * [x] benchmark: goal stay under 10 seconds for 1 million events (1152929 events = 5.5 seconds currently so we're well under our goal)
+* [ ] extract benchmarks to a different json deps so I can keep building them but they don't hinder the build pipeline
 
 ## Extra questions
 

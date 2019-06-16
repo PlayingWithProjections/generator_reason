@@ -29,7 +29,7 @@ This is a working list, more todos will probably be needed
 * [ ] implement marketing campaign
 * [ ] add command line interface to select different scenarios
 * [x] make binaries for linux, mac and windows
-* [ ] benchmark: goal stay under 10 seconds for 1milion events
+* [x] benchmark: goal stay under 10 seconds for 1 million events (1152929 events = 5.5 seconds currently so we're well under our goal)
 
 ## Extra questions
 

@@ -45,8 +45,10 @@ Current results show that we have 2 slow parts:
 Hopefully 1 is fixable. 2 will probably not be easily fixable.
 If we can fix 1, then we can probably land on 1milj events in about 15seconds which should be ok
 
-We're able to fix 1 a bit with using ptime. It might be possible to go even faster with `Core.Date` but haven't found out how to use it yet...
+We're able to fix 1 a bit with using ptime. It might be possible to go even faster with `Core.date`.
 For example, now with 20 days a full run takes about `566ms`, without to json `210ms` and without outputting the events `40ms`
+
+After benchmarking and searching, I found that using `core` is not possible on windows. Getting help from [Discuss.ocaml](https://discuss.ocaml.org/t/performance-of-printf-sprintf/3936/5) I found an implementation that is even 4 times faster than core. Awesome
 
 ### Fixing events to json with core unix time
 

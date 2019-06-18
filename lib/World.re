@@ -135,23 +135,12 @@ let createPlayer = world => {
 let createQuiz = world => {
   let generateRandomAmountOfQuestions = () => {
     let nbOfQuestions = Random.int(10);
-    let rec generate = (i, questions) =>
-      if (i > nbOfQuestions) {
-        questions;
-      } else {
-        generate(
-          i + 1,
-          [
-            {
-              Quiz.question: "Some random question",
-              answer: "Some answer",
-              id: Uuid.generateId(),
-            },
-            ...questions,
-          ],
-        );
-      };
-    generate(0, []);
+    List.map(
+      ~f=
+        ((question, answer)) =>
+          {Quiz.question, answer, id: Uuid.generateId()},
+      Faker.quiz(nbOfQuestions),
+    );
   };
   let id = Uuid.generateId();
   let questions = generateRandomAmountOfQuestions();

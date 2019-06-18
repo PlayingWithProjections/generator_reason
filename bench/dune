@@ -1,0 +1,4 @@
+(executables
+ (names Bench)
+ (public_names Bench)
+ (libraries lib core core_bench))

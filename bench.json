@@ -1,0 +1,10 @@
+{
+	"source": "./package.json",
+	"override": {
+		"dependencies": {
+			"@opam/base": null,
+			"@opam/core": "*",
+			"@opam/core_bench": "*"
+		}
+	}
+}

@@ -1,4 +1,4 @@
 (executables
  (names Hello)
  (public_names Hello)
- (libraries lib ptime))
+ (libraries lib))

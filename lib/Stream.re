@@ -198,8 +198,8 @@ let createPlayer = (timestamp, world) => {
       ~type_=
         Events.PlayerHasRegistered({
           playerId,
-          firstName: "Fix",
-          lastName: "Me",
+          firstName: Faker.firstName(),
+          lastName: Faker.lastName(),
         }),
     ),
   );

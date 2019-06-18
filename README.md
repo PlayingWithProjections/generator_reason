@@ -25,12 +25,12 @@ This is a working list, more todos will probably be needed
 * [ ] implement a mechanism for deciding on when to play a game
 * [ ] implement a mechanism for deciding when to create a quiz
 * [ ] implement different player types (fast answers, always correct, slow, only play one time, top players, only create a quiz, never play, bots,...)
-* [ ] implement random names and questions with answers
+* [x] implement random names and questions with answers
 * [ ] implement marketing campaign
-* [ ] add command line interface to select different scenarios
+* [ ] add command line interface to select different scenarios (is this necessary?)
 * [x] make binaries for linux, mac and windows
 * [x] benchmark: goal stay under 10 seconds for 1 million events (1152929 events = 5.5 seconds currently so we're well under our goal)
-* [ ] extract benchmarks to a different json deps so I can keep building them but they don't hinder the build pipeline
+* [x] extract benchmarks to a different json deps so I can keep building them but they don't hinder the build pipeline
 
 ## Extra questions
 

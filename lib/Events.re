@@ -1,20 +1,21 @@
 let memory = Bytes.of_string("2000-00-00T00:00:00Z");
-let set = (pos, int) => Bytes.unsafe_set(memory, pos, (Char.chr (48+int)));
+let set = (pos, int) => Bytes.unsafe_set(memory, pos, Char.chr(48 + int));
 
-let format = ({Unix.tm_year, tm_mon, tm_mday, tm_hour, tm_min, tm_sec, _}: Unix.tm) => {
-  set(2, (tm_year/10 mod 10));
-  set(3, (tm_year mod 10));
-  set(5, ((tm_mon + 1)/10 mod 10));
-  set(6, ((tm_mon + 1) mod 10));
-  set(8, ((tm_mday)/10 mod 10));
-  set(9, ((tm_mday) mod 10));
-  set(11, ((tm_hour)/10 mod 10));
-  set(12, ((tm_hour) mod 10));
-  set(14, ((tm_min)/10 mod 10));
-  set(15, ((tm_min) mod 10));
-  set(17, ((tm_sec)/10 mod 10));
-  set(18, ((tm_sec) mod 10));
-  Bytes.to_string(memory)
+let format =
+    ({Unix.tm_year, tm_mon, tm_mday, tm_hour, tm_min, tm_sec, _}: Unix.tm) => {
+  set(2, tm_year / 10 mod 10);
+  set(3, tm_year mod 10);
+  set(5, (tm_mon + 1) / 10 mod 10);
+  set(6, (tm_mon + 1) mod 10);
+  set(8, tm_mday / 10 mod 10);
+  set(9, tm_mday mod 10);
+  set(11, tm_hour / 10 mod 10);
+  set(12, tm_hour mod 10);
+  set(14, tm_min / 10 mod 10);
+  set(15, tm_min mod 10);
+  set(17, tm_sec / 10 mod 10);
+  set(18, tm_sec mod 10);
+  Bytes.to_string(memory);
 };
 [@deriving show]
 type event = {

@@ -276,7 +276,7 @@ let rec run = (timestamp, endTimestamp, events, world) =>
   };
 
 let hello = () => {
-  let period = CalendarLib.Calendar.Precise.Period.day(10);
+  let period = CalendarLib.Calendar.Precise.Period.day(70);
   let (startTimestamp, endTimestamp) = timestampRange(period);
   let playerDistribution = {
     Distribution.(

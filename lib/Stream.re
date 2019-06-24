@@ -214,7 +214,7 @@ let createPlayerHandler = (timestamp, world) =>
   };
 
 let createQuizHandler = (timestamp, world) => {
-  let (world, playersCreatingQuiz) = World.playersCreatingQuiz(world);
+  let (world, playersCreatingQuiz) = World.playersCreatingQuiz(timestamp, world);
   List.fold_left(
     ~init=(world, []),
     ~f=
@@ -276,14 +276,14 @@ let rec run = (timestamp, endTimestamp, events, world) =>
   };
 
 let hello = () => {
-  let period = CalendarLib.Calendar.Precise.Period.day(70);
+  let period = CalendarLib.Calendar.Precise.Period.day(10);
   let (startTimestamp, endTimestamp) = timestampRange(period);
   let playerDistribution = {
     Distribution.(
-      D.empty()
-      |> D.add(~i=5, ~outcome=World.Player.BotAlwasyCorrect)
-      |> D.add(~i=10, ~outcome=World.Player.NeverPlayer)
-      |> D.rest(~outcome=World.Player.Normal)
+      PercentageDistribution.empty()
+      |> PercentageDistribution.add(~i=5, ~outcome=World.Player.BotAlwasyCorrect)
+      |> PercentageDistribution.add(~i=10, ~outcome=World.Player.NeverPlayer)
+      |> PercentageDistribution.rest(~outcome=World.Player.Normal)
     );
   };
   let events =

@@ -20,34 +20,6 @@ module Quiz = {
   };
 };
 
-module F = {
-  type howMany =
-    | Number(int)
-    | Never
-    | ForEver;
-  type distribution =
-    | Steady(Distribution.frequency);
-  //| Distribution(list((int, perPeriod)));
-  type t = (howMany, distribution);
-  let happens = t => {
-    let trueOrFalse = distribution => {
-      switch (distribution) {
-      | Steady(perPeriod) => Distribution.happens(perPeriod)
-      };
-    };
-    switch (t) {
-    | (Never, _) => (false, t)
-    | (ForEver, distribution) => (trueOrFalse(distribution), t)
-    | (Number(0), _) => (false, t)
-    | (Number(x), distribution) =>
-      if (trueOrFalse(distribution)) {
-        (true, (Number(x - 1), distribution));
-      } else {
-        (false, (Number(x), distribution));
-      }
-    };
-  };
-};
 
 module Player = {
   type playerType =
@@ -57,7 +29,7 @@ module Player = {
   type t = {
     id: Uuid.t,
     playerType,
-    createQuizDistribution: F.t,
+    createQuizDistribution: Distribution.MonthDistribution.t,
   };
   let create = (~id, ~playerType, ~createQuizDistribution) => {
     id,
@@ -80,9 +52,9 @@ module Player = {
     };
   };
 
-  let shouldCreateQuiz = player => {
+  let shouldCreateQuiz = (timestamp, player) => {
     let (shouldCreateQuiz, createQuizDistribution) =
-      F.happens(player.createQuizDistribution);
+      Distribution.MonthDistribution.happens(timestamp, player.createQuizDistribution);
     (shouldCreateQuiz, {...player, createQuizDistribution});
   };
 };
@@ -103,7 +75,7 @@ module Game = {
 type playerMap = Map.t(Uuid.t, Player.t, Uuid.comparator_witness);
 
 type t = {
-  playerDistribution: Distribution.D.t(Player.playerType),
+  playerDistribution: Distribution.PercentageDistribution.t(Player.playerType),
   players: playerMap,
   quizzes: list(Quiz.t),
 };
@@ -115,11 +87,11 @@ let init = playerDistribution => {
 };
 
 let createPlayer = world => {
-  let playerType = Distribution.D.pick(world.playerDistribution);
+  let playerType = Distribution.PercentageDistribution.pick(world.playerDistribution);
   let id = Uuid.generateId();
   let createQuizDistribution = (
-    F.Number(1),
-    F.Steady(Distribution.PerDay(10)),
+    Distribution.MonthDistribution.Number(1),
+    Distribution.MonthDistribution.Steady(Distribution.PerDay(10)),
   );
   let player = Player.create(~id, ~playerType, ~createQuizDistribution);
   switch (player.Player.playerType) {
@@ -150,12 +122,12 @@ let createQuiz = world => {
 
 let playersOpeningGame = world => Map.data(world.players);
 
-let playersCreatingQuiz = world => {
+let playersCreatingQuiz = (timestamp, world) => {
   Map.fold(
     world.players,
     ~init=(world, []),
     ~f=(~key as _, ~data as player, (world, playersCreatingQuiz)) => {
-      let (shouldCreate, player) = Player.shouldCreateQuiz(player);
+      let (shouldCreate, player) = Player.shouldCreateQuiz(timestamp, player);
       let playersCreatingQuiz =
         shouldCreate ? [player, ...playersCreatingQuiz] : playersCreatingQuiz;
       (

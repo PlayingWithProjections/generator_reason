@@ -22,6 +22,7 @@ This is a working list, more todos will probably be needed
 * [x] save the events to a file
 * [x] implement a mechanism for different kind of correctness of playing a game
 * [x] implement a mechanism for different kind of speed of playing a game
+* [ ] implement boring and popular quizzes
 * [ ] implement a mechanism for deciding on when to play a game
 * [ ] implement a mechanism for deciding when to create a quiz
 * [ ] implement different player types (fast answers, always correct, slow, only play one time, top players, only create a quiz, never play, bots,...)

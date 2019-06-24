@@ -1,3 +1,5 @@
+open! Base;
+
 type frequency =
   | PerDay(int)
   | PerMonth(int)
@@ -14,7 +16,83 @@ let happens = frequency => {
   };
 };
 
-module D = {
+
+module Month = {
+  module T = {
+    type t = {
+      year: int,
+      month: int,
+    };
+    let compare = (t1, t2) => {
+      let cmpYear = compare(t1.year, t2.year);
+      if (cmpYear != 0) {
+        cmpYear;
+      } else {
+        compare(t1.month, t2.month);
+      };
+    };
+
+    let sexp_of_t = (t): Sexp.t =>
+      Sexp.List([
+        Sexp.Atom(Int.to_string(t.year)),
+        Sexp.Atom(Int.to_string(t.month)),
+      ]);
+  };
+
+  include T;
+  include Comparator.Make(T);
+
+  let fromTimestamp = timestamp => {
+    let date =
+      CalendarLib.Calendar.Precise.from_unixfloat(Float.of_int(timestamp));
+    let year = CalendarLib.Calendar.Precise.year(date);
+    let month = CalendarLib.Calendar.Precise.year(date);
+    {year, month};
+  };
+};
+
+module MonthDistribution = {
+  type spread =
+    Map.t(Month.t, frequency, Month.comparator_witness);
+  type month = {
+    year: int,
+    month: int,
+  };
+  type howMany =
+    | Number(int)
+    | Never
+    | ForEver;
+  type distribution =
+    | Steady(frequency)
+    | Spread(spread);
+  type t = (howMany, distribution);
+  let happens = (timestamp, t) => {
+    let trueOrFalse = distribution => {
+      switch (distribution) {
+      | Steady(perPeriod) => happens(perPeriod)
+      | Spread(spread) =>
+        let month = Month.fromTimestamp(timestamp);
+        switch (Map.find(spread, month)) {
+        | None => false
+        | Some(frequency) => happens(frequency)
+        };
+      };
+    };
+    switch (t) {
+    | (Never, _) => (false, t)
+    | (ForEver, distribution) => (trueOrFalse(distribution), t)
+    | (Number(0), _) => (false, t)
+    | (Number(x), distribution) =>
+      if (trueOrFalse(distribution)) {
+        (true, (Number(x - 1), distribution));
+      } else {
+        (false, (Number(x), distribution));
+      }
+    };
+  };
+};
+
+module PercentageDistribution = {
   /**
 	 * A module for easily creating distributions that you want to pick.
 	 * An example:
@@ -66,6 +144,6 @@ let randomFromList = l => {
   | _ =>
     let length = List.length(l);
     let i = Random.int(length);
-    Some(List.nth(l, i));
+    Some(List.nth_exn(l, i));
   };
 };

@@ -52,7 +52,7 @@ let playGame = (player, world, timestamp) => {
   // and you have 2 minutes to answer a question
   let quiz = World.pickQuiz(world);
   switch (quiz) {
-  | None => []
+  | None => (world, [])
   | Some(quiz) =>
     let gameId = Uuid.generateId();
     let timestamp = timestamp +. Random.float(fiveMinutes);
@@ -67,7 +67,8 @@ let playGame = (player, world, timestamp) => {
           }),
       ),
     ];
-    let playersJoining = World.playersThatJoinAGame(world);
+    let (world, playersJoining) =
+      World.playersThatJoinAGame(timestamp, world);
     let timestampPlusFiveMinutes = timestamp +. fiveMinutes;
     let events =
       switch (playersJoining) {
@@ -184,7 +185,7 @@ let playGame = (player, world, timestamp) => {
           ...events,
         ];
       };
-    events;
+    (world, events);
   };
 };
 
@@ -237,7 +238,7 @@ let playGameHandler = (timestamp, world) => {
     ~f=
       ((world, events), player) =>
         if (Distribution.happens(Distribution.PerDay(10))) {
-          let newEvents = playGame(player, world, timestamp);
+          let (world, newEvents) = playGame(player, world, timestamp);
           (world, newEvents @ events);
         } else {
           (world, events);

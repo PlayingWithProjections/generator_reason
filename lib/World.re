@@ -29,13 +29,15 @@ module Player = {
     id: Uuid.t,
     playerType,
     createQuizDistribution: Distribution.MonthDistribution.t,
+    joinGameDistribution: Distribution.MonthDistribution.t,
   };
-  let create = (~id, ~playerType, ~createQuizDistribution) => {
+  let create =
+      (~id, ~playerType, ~createQuizDistribution, ~joinGameDistribution) => {
     id,
     playerType,
     createQuizDistribution,
+    joinGameDistribution,
   };
-  let joinGameDistribution = _player => Distribution.OneIn(10);
   let answerQuestion = player => {
     let speed = Random.float(60. *. 2.);
     switch (player.playerType) {
@@ -58,6 +60,15 @@ module Player = {
         player.createQuizDistribution,
       );
     (shouldCreateQuiz, {...player, createQuizDistribution});
+  };
+
+  let shouldJoinGame = (timestamp, player) => {
+    let (shouldJoinGame, joinGameDistribution) =
+      Distribution.MonthDistribution.happens(
+        timestamp,
+        player.joinGameDistribution,
+      );
+    (shouldJoinGame, {...player, joinGameDistribution});
   };
 };
 
@@ -109,7 +120,27 @@ let createPlayer = world => {
         Distribution.MonthDistribution.Steady(Distribution.PerDay(10)),
       )
     };
-  let player = Player.create(~id, ~playerType, ~createQuizDistribution);
+  let joinGameDistribution =
+    switch (playerType) {
+    | Player.NeverPlayer => Distribution.MonthDistribution.Never
+    | Player.Normal =>
+      Distribution.MonthDistribution.ForEver(
+        Distribution.MonthDistribution.Steady(Distribution.PerMonth(10)),
+      )
+
+    | Player.BotAlwasyCorrect =>
+      Distribution.MonthDistribution.Number(
+        100,
+        Distribution.MonthDistribution.Steady(Distribution.PerDay(10)),
+      )
+    };
+  let player =
+    Player.create(
+      ~id,
+      ~playerType,
+      ~createQuizDistribution,
+      ~joinGameDistribution,
+    );
   switch (player.Player.playerType) {
   | Player.NeverPlayer => (id, world)
   | Player.Normal
@@ -168,10 +199,23 @@ let shouldCreatePlayer = (timestamp, world) => {
   (happens, {...world, createPlayerDistribution: newDistribution});
 };
 
-let playersThatJoinAGame = world =>
-  List.filter(
-    ~f=player => Player.joinGameDistribution(player) |> Distribution.happens,
-    Map.data(world.players),
+let playersThatJoinAGame = (timestamp, world) =>
+  Map.fold(
+    world.players,
+    ~init=(world, []),
+    ~f=(~key as _, ~data as player, (world, playersJoiningGame)) => {
+      let (shouldJoin, player) = Player.shouldJoinGame(timestamp, player);
+      let playersJoiningGame =
+        shouldJoin ? [player, ...playersJoiningGame] : playersJoiningGame;
+      (
+        {
+          ...world,
+          players:
+            Map.set(world.players, ~key=player.Player.id, ~data=player),
+        },
+        playersJoiningGame,
+      );
+    },
   );
 
 let pickQuiz = world => Distribution.randomFromList(world.quizzes);

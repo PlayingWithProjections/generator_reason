@@ -1,4 +1,5 @@
-(executables
- (names Hello)
- (public_names Hello)
+(executable
+ (package quizzy-stream)
+ (name Hello)
+ (public_name Hello)
  (libraries lib))

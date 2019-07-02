@@ -20,7 +20,7 @@ let format =
 [@deriving show]
 type event = {
   id: Uuid.t,
-  timestamp: int,
+  timestamp: float,
   type_: payload,
 }
 and payload =
@@ -78,8 +78,9 @@ let create = (~timestamp, ~type_) => {
   type_,
   timestamp,
 };
+
 let toTimestamp = t =>
-  CalendarLib.Calendar.Precise.from_unixfloat(float_of_int(t))
+  CalendarLib.Calendar.Precise.from_unixfloat(t)
   |> CalendarLib.Printer.Precise_Calendar.sprint("%iT%T%z");
 
 let toJson = event => {
@@ -164,7 +165,7 @@ let toJson = event => {
       ])
     };
   let timestamp = {
-    Unix.(format(gmtime(float_of_int(event.timestamp))));
+    Unix.(format(gmtime(event.timestamp)));
   };
 
   /* let timestamp = */

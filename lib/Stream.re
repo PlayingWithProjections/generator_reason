@@ -1,12 +1,12 @@
 open! Base;
 
-let tenMinutes = 60 * 10;
-let fiveMinutes = 60 * 5;
-let twoMinutes = 60 * 2;
+let tenMinutes = 60. *. 10.;
+let fiveMinutes = 60. *. 5.;
+let twoMinutes = 60. *. 2.;
 
 let createQuiz = (ownerId, timestamp, world) => {
   let (quizId, questions, world) = World.createQuiz(world);
-  let timestamp = timestamp + Random.int(fiveMinutes);
+  let timestamp = timestamp +. Random.float(fiveMinutes);
   let createEvent =
     Events.create(
       ~timestamp,
@@ -16,7 +16,7 @@ let createQuiz = (ownerId, timestamp, world) => {
     List.fold_left(
       ~f=
         ((events, timestamp), {World.Quiz.question, answer, id}) => {
-          let timestamp = timestamp + Random.int(tenMinutes);
+          let timestamp = timestamp +. Random.float(tenMinutes);
           (
             [
               Events.create(
@@ -37,7 +37,7 @@ let createQuiz = (ownerId, timestamp, world) => {
       ~init=([createEvent], timestamp),
       questions,
     );
-  let timestamp = timestamp + Random.int(fiveMinutes);
+  let timestamp = timestamp +. Random.float(fiveMinutes);
   let publishEvent =
     Events.create(
       ~timestamp,
@@ -55,7 +55,7 @@ let playGame = (player, world, timestamp) => {
   | None => []
   | Some(quiz) =>
     let gameId = Uuid.generateId();
-    let timestamp = timestamp + Random.int(fiveMinutes);
+    let timestamp = timestamp +. Random.float(fiveMinutes);
     let events = [
       Events.create(
         ~timestamp,
@@ -68,7 +68,7 @@ let playGame = (player, world, timestamp) => {
       ),
     ];
     let playersJoining = World.playersThatJoinAGame(world);
-    let timestampPlusFiveMinutes = timestamp + fiveMinutes;
+    let timestampPlusFiveMinutes = timestamp +. fiveMinutes;
     let events =
       switch (playersJoining) {
       // TODO did we have a rule that at least x amount of players have to join?
@@ -86,7 +86,7 @@ let playGame = (player, world, timestamp) => {
               (events, player) =>
                 [
                   Events.create(
-                    ~timestamp=timestamp + Random.int(fiveMinutes),
+                    ~timestamp=timestamp +. Random.float(fiveMinutes),
                     ~type_=
                       Events.PlayerJoinedGame({
                         playerId: player.World.Player.id,
@@ -126,9 +126,9 @@ let playGame = (player, world, timestamp) => {
                         let answerType = World.Player.answerQuestion(player);
                         let timestamp =
                           switch (answerType) {
-                          | `AnswerCorrectly(speed) => timestamp + speed
-                          | `AnswerIncorrectly(speed) => timestamp + speed
-                          | `AnswerTimeout => timestamp + twoMinutes
+                          | `AnswerCorrectly(speed) => timestamp +. speed
+                          | `AnswerIncorrectly(speed) => timestamp +. speed
+                          | `AnswerTimeout => timestamp +. twoMinutes
                           };
                         let type_ =
                           switch (answerType) {
@@ -157,7 +157,7 @@ let playGame = (player, world, timestamp) => {
                       },
                     players,
                   );
-                let timestamp = timestamp + twoMinutes;
+                let timestamp = timestamp +. twoMinutes;
                 (
                   [
                     Events.create(
@@ -189,7 +189,7 @@ let playGame = (player, world, timestamp) => {
 };
 
 let createPlayer = (timestamp, world) => {
-  let timestamp = timestamp + Random.int(tenMinutes);
+  let timestamp = timestamp +. Random.float(tenMinutes);
   let (playerId, worldUpdate) = World.createPlayer(world);
   (
     worldUpdate,
@@ -205,16 +205,19 @@ let createPlayer = (timestamp, world) => {
   );
 };
 
-let createPlayerHandler = (timestamp, world) =>
-  if (Distribution.happens(Distribution.PerDay(50))) {
+let createPlayerHandler = (timestamp, world) => {
+  let (happens, world) = World.shouldCreatePlayer(timestamp, world);
+  if (happens) {
     let (world, playerHasRegistered) = createPlayer(timestamp, world);
     (world, [playerHasRegistered]);
   } else {
     (world, []);
   };
+};
 
 let createQuizHandler = (timestamp, world) => {
-  let (world, playersCreatingQuiz) = World.playersCreatingQuiz(timestamp, world);
+  let (world, playersCreatingQuiz) =
+    World.playersCreatingQuiz(timestamp, world);
   List.fold_left(
     ~init=(world, []),
     ~f=
@@ -261,16 +264,13 @@ let timestampRange = period => {
   open CalendarLib.Calendar;
   let now = Precise.now();
   let start = Precise.add(now, Precise.Period.opp(period));
-  (
-    Precise.to_unixfloat(start) |> Int.of_float,
-    Precise.to_unixfloat(now) |> Int.of_float,
-  );
+  (Precise.to_unixfloat(start), Precise.to_unixfloat(now));
 };
 
 let rec run = (timestamp, endTimestamp, events, world) =>
-  if (timestamp <= endTimestamp) {
+  if (Float.compare(timestamp, endTimestamp) <= 0) {
     let (world, newEvents) = handleTick(timestamp, world);
-    run(timestamp + tenMinutes, endTimestamp, newEvents @ events, world);
+    run(timestamp +. tenMinutes, endTimestamp, newEvents @ events, world);
   } else {
     events;
   };
@@ -281,15 +281,37 @@ let hello = () => {
   let playerDistribution = {
     Distribution.(
       PercentageDistribution.empty()
-      |> PercentageDistribution.add(~i=5, ~outcome=World.Player.BotAlwasyCorrect)
+      |> PercentageDistribution.add(
+           ~i=5,
+           ~outcome=World.Player.BotAlwasyCorrect,
+         )
       |> PercentageDistribution.add(~i=10, ~outcome=World.Player.NeverPlayer)
       |> PercentageDistribution.rest(~outcome=World.Player.Normal)
     );
   };
-  let events =
-    run(startTimestamp, endTimestamp, [], World.init(playerDistribution));
-  Console.log(List.length(events));
-  let jsonEvents = List.rev_map(~f=Events.toJson, events);
-  Yojson.Basic.to_file(~len=100000, "data/0.json", `List(jsonEvents));
+  let createPlayerDistribution = {
+    let m =
+      Distribution.MDistribution.init(startTimestamp)
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(45))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(45))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(45))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(45))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(45))
+      |> Distribution.MDistribution.build;
+    (
+      Distribution.MonthDistribution.ForEver,
+      Distribution.MonthDistribution.Spread(m),
+    );
+  };
+  let _events =
+    run(
+      startTimestamp,
+      endTimestamp,
+      [],
+      World.init(~playerDistribution, ~createPlayerDistribution),
+    );
+  /* Console.log(List.length(events)); */
+  /* let jsonEvents = List.rev_map(~f=Events.toJson, events); */
+  /* Yojson.Basic.to_file(~len=100000, "data/0.json", `List(jsonEvents)); */
   ();
 };

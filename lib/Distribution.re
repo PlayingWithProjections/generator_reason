@@ -1,21 +1,53 @@
 open! Base;
 
+let month_int = date => {
+  let month = CalendarLib.Calendar.Precise.month(date);
+  switch (month) {
+  | CalendarLib.Calendar.Jan => 1
+  | CalendarLib.Calendar.Feb => 2
+  | CalendarLib.Calendar.Mar => 3
+  | CalendarLib.Calendar.Apr => 4
+  | CalendarLib.Calendar.May => 5
+  | CalendarLib.Calendar.Jun => 6
+  | CalendarLib.Calendar.Jul => 7
+  | CalendarLib.Calendar.Aug => 8
+  | CalendarLib.Calendar.Sep => 9
+  | CalendarLib.Calendar.Oct => 10
+  | CalendarLib.Calendar.Nov => 11
+  | CalendarLib.Calendar.Dec => 12
+  };
+};
+
 type frequency =
   | PerDay(int)
   | PerMonth(int)
   | OneIn(int);
 
-let minutesPerDay = 24 * 60;
+let minutesPerDay = 24 * 60 / 10;
 let minutesPerMonth = minutesPerDay * 30;
 
 let happens = frequency => {
   switch (frequency) {
-  | PerDay(times) => Random.int(minutesPerDay / times) == 0
-  | PerMonth(times) => Random.int(minutesPerMonth / times) == 0
+  | OneIn(0) => false
   | OneIn(x) => Random.int(x) == 0
+  | PerDay(0) => false
+  | PerDay(times) =>
+    let x = minutesPerDay / times;
+    if (x == 0) {
+      true;
+    } else {
+      Random.int(x) == 0;
+    };
+  | PerMonth(0) => false
+  | PerMonth(times) =>
+    let x = minutesPerMonth / times;
+    if (x == 0) {
+      true;
+    } else {
+      Random.int(x) == 0;
+    };
   };
 };
-
 
 module Month = {
   module T = {
@@ -43,17 +75,36 @@ module Month = {
   include Comparator.Make(T);
 
   let fromTimestamp = timestamp => {
-    let date =
-      CalendarLib.Calendar.Precise.from_unixfloat(Float.of_int(timestamp));
+    let date = CalendarLib.Calendar.Precise.from_unixfloat(timestamp);
     let year = CalendarLib.Calendar.Precise.year(date);
-    let month = CalendarLib.Calendar.Precise.year(date);
-    {year, month};
+    {year, month: month_int(date)};
   };
+
+  let addMonth = ({year, month}) =>
+    if (month == 12) {
+      {year: year + 1, month: 1};
+    } else {
+      {year, month: month + 1};
+    };
+};
+
+module MDistribution = {
+  type t = Map.t(Month.t, frequency, Month.comparator_witness);
+  type building = (t, float);
+
+  let init = timestamp => {
+    let key = Month.fromTimestamp(timestamp);
+    (Map.empty((module Month)), key);
+  };
+
+  let add = ((t, key), ~data) => {
+    (Map.set(t, ~key, ~data), Month.addMonth(key));
+  };
+
+  let build = ((t, _)) => t;
 };
 
 module MonthDistribution = {
-  type spread =
-    Map.t(Month.t, frequency, Month.comparator_witness);
   type month = {
     year: int,
     month: int,
@@ -64,7 +115,7 @@ module MonthDistribution = {
     | ForEver;
   type distribution =
     | Steady(frequency)
-    | Spread(spread);
+    | Spread(MDistribution.t);
   type t = (howMany, distribution);
   let happens = (timestamp, t) => {
     let trueOrFalse = distribution => {

@@ -8,7 +8,7 @@
     "release": { "bin": [ "Hello" ] }
   },
   "scripts": {
-    "test": "esy x Hello",
+    "test": "esy x RunTests.exe",
     "doc": "esy dune build @doc",
     "fmt": "esy dune build @fmt --auto-promote"
   },
@@ -23,7 +23,7 @@
     "@opam/yojson": "1.5.0",
     "@reason-native/console": "*",
     "@reason-native/pastel": "*",
-    "@reason-native/rely": "*",
+    "@reason-native/rely": "^2.2.0",
     "ocaml": "~4.6.0",
     "refmterr": "*"
   },

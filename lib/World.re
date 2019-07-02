@@ -38,7 +38,7 @@ module Player = {
   };
   let joinGameDistribution = _player => Distribution.OneIn(10);
   let answerQuestion = player => {
-    let speed = Random.int(60 * 2);
+    let speed = Random.float(60. *. 2.);
     switch (player.playerType) {
     | BotAlwasyCorrect => `AnswerCorrectly(speed)
     | NeverPlayer => `AnswerTimeout
@@ -76,12 +76,14 @@ type playerMap = Map.t(Uuid.t, Player.t, Uuid.comparator_witness);
 
 type t = {
   playerDistribution: Distribution.PercentageDistribution.t(Player.playerType),
+  createPlayerDistribution: Distribution.MonthDistribution.t,
   players: playerMap,
   quizzes: list(Quiz.t),
 };
 
-let init = playerDistribution => {
+let init = (~playerDistribution, ~createPlayerDistribution) => {
   playerDistribution,
+  createPlayerDistribution,
   players: Map.empty((module Uuid)),
   quizzes: [],
 };
@@ -140,6 +142,11 @@ let playersCreatingQuiz = (timestamp, world) => {
       );
     },
   );
+};
+
+let shouldCreatePlayer = (timestamp, world) => {
+  let (happens, newDistribution) = (Distribution.MonthDistribution.happens(timestamp, world.createPlayerDistribution));
+  (happens, {...world, createPlayerDistribution: newDistribution})
 };
 
 let playersThatJoinAGame = world =>

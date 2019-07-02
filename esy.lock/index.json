@@ -1,5 +1,5 @@
 {
-  "checksum": "ee2a9a8a24b21dd4c72a2742ad068c68",
+  "checksum": "ffd424e9ed63a06285c711e2a2a4ef5c",
   "root": "quizzy-stream@link-dev:./package.json",
   "node": {
     "refmterr@3.1.10@d41d8cd9": {
@@ -43,7 +43,7 @@
         "@esy-ocaml/reason@3.4.0@d41d8cd9"
       ],
       "devDependencies": [
-        "ocaml@4.6.10@d41d8cd9", "@opam/odoc@opam:1.4.0@816970ee",
+        "ocaml@4.6.10@d41d8cd9", "@opam/odoc@opam:1.4.1@1423b616",
         "@opam/merlin-lsp@github:ocaml/merlin:merlin-lsp.opam#5af6d2dccc94dd6baad984c725fab3166e96fa7a@d41d8cd9",
         "@opam/merlin@opam:3.3.1@43415979"
       ]
@@ -563,20 +563,20 @@
       ],
       "devDependencies": [ "ocaml@4.6.10@d41d8cd9" ]
     },
-    "@opam/odoc@opam:1.4.0@816970ee": {
-      "id": "@opam/odoc@opam:1.4.0@816970ee",
+    "@opam/odoc@opam:1.4.1@1423b616": {
+      "id": "@opam/odoc@opam:1.4.1@1423b616",
       "name": "@opam/odoc",
-      "version": "opam:1.4.0",
+      "version": "opam:1.4.1",
       "source": {
         "type": "install",
         "source": [
-          "archive:https://opam.ocaml.org/cache/md5/8f/8fec61a88813b2295a16298fc6daedf1#md5:8fec61a88813b2295a16298fc6daedf1",
-          "archive:https://github.com/ocaml/odoc/archive/1.4.0.tar.gz#md5:8fec61a88813b2295a16298fc6daedf1"
+          "archive:https://opam.ocaml.org/cache/md5/b2/b27f9de7993d7bb87cbcc3586b19360c#md5:b27f9de7993d7bb87cbcc3586b19360c",
+          "archive:https://github.com/ocaml/odoc/archive/1.4.1.tar.gz#md5:b27f9de7993d7bb87cbcc3586b19360c"
         ],
         "opam": {
           "name": "odoc",
-          "version": "1.4.0",
-          "path": "esy.lock/opam/odoc.1.4.0"
+          "version": "1.4.1",
+          "path": "esy.lock/opam/odoc.1.4.1"
         }
       },
       "overrides": [],
@@ -698,30 +698,25 @@
         "@opam/ocamlfind@opam:1.8.0@f744a0c5"
       ]
     },
-    "@opam/merlin-extend@opam:0.3@0af73a50": {
-      "id": "@opam/merlin-extend@opam:0.3@0af73a50",
+    "@opam/merlin-extend@opam:0.4@9e025201": {
+      "id": "@opam/merlin-extend@opam:0.4@9e025201",
       "name": "@opam/merlin-extend",
-      "version": "opam:0.3",
+      "version": "opam:0.4",
       "source": {
         "type": "install",
         "source": [
-          "archive:https://opam.ocaml.org/cache/md5/9c/9c6dfd4f53328f02f12fcc265f4e2dda#md5:9c6dfd4f53328f02f12fcc265f4e2dda",
-          "archive:https://github.com/let-def/merlin-extend/archive/v0.3.tar.gz#md5:9c6dfd4f53328f02f12fcc265f4e2dda"
+          "archive:https://opam.ocaml.org/cache/md5/06/0663a58f2c45fad71615fbf0f6dd2e51#md5:0663a58f2c45fad71615fbf0f6dd2e51",
+          "archive:https://github.com/let-def/merlin-extend/archive/v0.4.tar.gz#md5:0663a58f2c45fad71615fbf0f6dd2e51"
         ],
         "opam": {
           "name": "merlin-extend",
-          "version": "0.3",
-          "path": "esy.lock/opam/merlin-extend.0.3"
+          "version": "0.4",
+          "path": "esy.lock/opam/merlin-extend.0.4"
         }
       },
-      "overrides": [
-        {
-          "opamoverride":
-            "esy.lock/overrides/opam__s__merlin_extend_opam__c__0.3_opam_override"
-        }
-      ],
+      "overrides": [],
       "dependencies": [
-        "ocaml@4.6.10@d41d8cd9", "@opam/ocamlfind@opam:1.8.0@f744a0c5",
+        "ocaml@4.6.10@d41d8cd9", "@opam/dune@opam:1.10.0@b15ce221",
         "@opam/cppo@opam:1.6.6@25eb99ce", "@esy-ocaml/substs@0.0.1@d41d8cd9"
       ],
       "devDependencies": [ "ocaml@4.6.10@d41d8cd9" ]
@@ -753,20 +748,20 @@
         "@opam/ocamlfind@opam:1.8.0@f744a0c5"
       ]
     },
-    "@opam/menhir@opam:20190613@ea48c81c": {
-      "id": "@opam/menhir@opam:20190613@ea48c81c",
+    "@opam/menhir@opam:20190626@bbeb8953": {
+      "id": "@opam/menhir@opam:20190626@bbeb8953",
       "name": "@opam/menhir",
-      "version": "opam:20190613",
+      "version": "opam:20190626",
       "source": {
         "type": "install",
         "source": [
-          "archive:https://opam.ocaml.org/cache/md5/23/23c380e23903e1974c923f3a6ff25ad4#md5:23c380e23903e1974c923f3a6ff25ad4",
-          "archive:https://gitlab.inria.fr/fpottier/menhir/repository/20190613/archive.tar.gz#md5:23c380e23903e1974c923f3a6ff25ad4"
+          "archive:https://opam.ocaml.org/cache/md5/78/783961f8d124449a1a335cc8e50f013f#md5:783961f8d124449a1a335cc8e50f013f",
+          "archive:https://gitlab.inria.fr/fpottier/menhir/repository/20190626/archive.tar.gz#md5:783961f8d124449a1a335cc8e50f013f"
         ],
         "opam": {
           "name": "menhir",
-          "version": "20190613",
-          "path": "esy.lock/opam/menhir.20190613"
+          "version": "20190626",
+          "path": "esy.lock/opam/menhir.20190626"
         }
       },
       "overrides": [],
@@ -1208,8 +1203,8 @@
         "ocaml@4.6.10@d41d8cd9", "@opam/result@opam:1.4@7add0d71",
         "@opam/ocamlfind@opam:1.8.0@f744a0c5",
         "@opam/ocaml-migrate-parsetree@opam:1.3.1@266527bd",
-        "@opam/merlin-extend@opam:0.3@0af73a50",
-        "@opam/menhir@opam:20190613@ea48c81c",
+        "@opam/merlin-extend@opam:0.4@9e025201",
+        "@opam/menhir@opam:20190626@bbeb8953",
         "@opam/dune@opam:1.10.0@b15ce221"
       ],
       "devDependencies": []

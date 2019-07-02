@@ -22,12 +22,13 @@ This is a working list, more todos will probably be needed
 * [x] save the events to a file
 * [x] implement a mechanism for different kind of correctness of playing a game
 * [x] implement a mechanism for different kind of speed of playing a game
-* [ ] implement boring and popular quizzes
-* [ ] implement a mechanism for deciding on when to play a game
-* [ ] implement a mechanism for deciding when to create a quiz
-* [ ] implement different player types (fast answers, always correct, slow, only play one time, top players, only create a quiz, never play, bots,...)
+* [x] implement a mechanism for deciding on when to play a game
+* [x] implement a mechanism for deciding when to create a quiz
 * [x] implement random names and questions with answers
+* [ ] implement different player types (fast answers, always correct, slow, only play one time, top players, only create a quiz, never play, bots,...)
+* [ ] implement boring and popular quizzes
 * [ ] implement marketing campaign
+* [ ] implement different kind of players: playing many games, creating many quizzes
 * [ ] add command line interface to select different scenarios (is this necessary?)
 * [x] make binaries for linux, mac and windows
 * [x] benchmark: goal stay under 10 seconds for 1 million events (1152929 events = 5.5 seconds currently so we're well under our goal)

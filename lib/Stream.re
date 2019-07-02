@@ -276,7 +276,7 @@ let rec run = (timestamp, endTimestamp, events, world) =>
   };
 
 let hello = () => {
-  let period = CalendarLib.Calendar.Precise.Period.day(10);
+  let period = CalendarLib.Calendar.Precise.Period.day(20);
   let (startTimestamp, endTimestamp) = timestampRange(period);
   let playerDistribution = {
     Distribution.(
@@ -298,20 +298,19 @@ let hello = () => {
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(45))
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(45))
       |> Distribution.MDistribution.build;
-    (
-      Distribution.MonthDistribution.ForEver,
+    Distribution.MonthDistribution.ForEver(
       Distribution.MonthDistribution.Spread(m),
     );
   };
-  let _events =
+  let events =
     run(
       startTimestamp,
       endTimestamp,
       [],
       World.init(~playerDistribution, ~createPlayerDistribution),
     );
-  /* Console.log(List.length(events)); */
-  /* let jsonEvents = List.rev_map(~f=Events.toJson, events); */
-  /* Yojson.Basic.to_file(~len=100000, "data/0.json", `List(jsonEvents)); */
+  Console.log(List.length(events));
+  let jsonEvents = List.rev_map(~f=Events.toJson, events);
+  Yojson.Basic.to_file(~len=100000, "data/0.json", `List(jsonEvents));
   ();
 };

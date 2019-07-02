@@ -20,7 +20,6 @@ module Quiz = {
   };
 };
 
-
 module Player = {
   type playerType =
     | NeverPlayer
@@ -54,7 +53,10 @@ module Player = {
 
   let shouldCreateQuiz = (timestamp, player) => {
     let (shouldCreateQuiz, createQuizDistribution) =
-      Distribution.MonthDistribution.happens(timestamp, player.createQuizDistribution);
+      Distribution.MonthDistribution.happens(
+        timestamp,
+        player.createQuizDistribution,
+      );
     (shouldCreateQuiz, {...player, createQuizDistribution});
   };
 };
@@ -75,7 +77,8 @@ module Game = {
 type playerMap = Map.t(Uuid.t, Player.t, Uuid.comparator_witness);
 
 type t = {
-  playerDistribution: Distribution.PercentageDistribution.t(Player.playerType),
+  playerDistribution:
+    Distribution.PercentageDistribution.t(Player.playerType),
   createPlayerDistribution: Distribution.MonthDistribution.t,
   players: playerMap,
   quizzes: list(Quiz.t),
@@ -89,12 +92,23 @@ let init = (~playerDistribution, ~createPlayerDistribution) => {
 };
 
 let createPlayer = world => {
-  let playerType = Distribution.PercentageDistribution.pick(world.playerDistribution);
+  let playerType =
+    Distribution.PercentageDistribution.pick(world.playerDistribution);
   let id = Uuid.generateId();
-  let createQuizDistribution = (
-    Distribution.MonthDistribution.Number(1),
-    Distribution.MonthDistribution.Steady(Distribution.PerDay(10)),
-  );
+  let createQuizDistribution =
+    switch (playerType) {
+    | Player.NeverPlayer => Distribution.MonthDistribution.Never
+    | Player.Normal =>
+      Distribution.MonthDistribution.ForEver(
+        Distribution.MonthDistribution.Steady(Distribution.PerMonth(10)),
+      )
+
+    | Player.BotAlwasyCorrect =>
+      Distribution.MonthDistribution.Number(
+        100,
+        Distribution.MonthDistribution.Steady(Distribution.PerDay(10)),
+      )
+    };
   let player = Player.create(~id, ~playerType, ~createQuizDistribution);
   switch (player.Player.playerType) {
   | Player.NeverPlayer => (id, world)
@@ -129,7 +143,8 @@ let playersCreatingQuiz = (timestamp, world) => {
     world.players,
     ~init=(world, []),
     ~f=(~key as _, ~data as player, (world, playersCreatingQuiz)) => {
-      let (shouldCreate, player) = Player.shouldCreateQuiz(timestamp, player);
+      let (shouldCreate, player) =
+        Player.shouldCreateQuiz(timestamp, player);
       let playersCreatingQuiz =
         shouldCreate ? [player, ...playersCreatingQuiz] : playersCreatingQuiz;
       (
@@ -145,8 +160,12 @@ let playersCreatingQuiz = (timestamp, world) => {
 };
 
 let shouldCreatePlayer = (timestamp, world) => {
-  let (happens, newDistribution) = (Distribution.MonthDistribution.happens(timestamp, world.createPlayerDistribution));
-  (happens, {...world, createPlayerDistribution: newDistribution})
+  let (happens, newDistribution) =
+    Distribution.MonthDistribution.happens(
+      timestamp,
+      world.createPlayerDistribution,
+    );
+  (happens, {...world, createPlayerDistribution: newDistribution});
 };
 
 let playersThatJoinAGame = world =>

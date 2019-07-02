@@ -109,14 +109,13 @@ module MonthDistribution = {
     year: int,
     month: int,
   };
-  type howMany =
-    | Number(int)
+  type t =
+    | Number(int, distribution)
     | Never
-    | ForEver;
-  type distribution =
+    | ForEver(distribution)
+  and distribution =
     | Steady(frequency)
     | Spread(MDistribution.t);
-  type t = (howMany, distribution);
   let happens = (timestamp, t) => {
     let trueOrFalse = distribution => {
       switch (distribution) {
@@ -130,14 +129,14 @@ module MonthDistribution = {
       };
     };
     switch (t) {
-    | (Never, _) => (false, t)
-    | (ForEver, distribution) => (trueOrFalse(distribution), t)
-    | (Number(0), _) => (false, t)
-    | (Number(x), distribution) =>
+    | Never => (false, t)
+    | ForEver(distribution) => (trueOrFalse(distribution), t)
+    | Number(0, _) => (false, t)
+    | Number(x, distribution) =>
       if (trueOrFalse(distribution)) {
-        (true, (Number(x - 1), distribution));
+        (true, Number(x - 1, distribution));
       } else {
-        (false, (Number(x), distribution));
+        (false, Number(x, distribution));
       }
     };
   };

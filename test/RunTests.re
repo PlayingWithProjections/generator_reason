@@ -1,1 +1,1 @@
-Test.TestFramework.cli()
+Test.TestFramework.cli();

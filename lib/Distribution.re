@@ -90,7 +90,7 @@ module Month = {
 
 module MDistribution = {
   type t = Map.t(Month.t, frequency, Month.comparator_witness);
-  type building = (t, float);
+  type partial = (t, Month.t);
 
   let init = timestamp => {
     let key = Month.fromTimestamp(timestamp);
@@ -105,10 +105,6 @@ module MDistribution = {
 };
 
 module MonthDistribution = {
-  type month = {
-    year: int,
-    month: int,
-  };
   type t =
     | Number(int, distribution)
     | Never

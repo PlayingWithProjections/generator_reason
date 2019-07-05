@@ -169,6 +169,7 @@ let createQuiz = world => {
 
 let playersOpeningGame = world => Map.data(world.players);
 
+// We should probably remove the players that don't create a quiz anymore to keep the performance ok
 let playersCreatingQuiz = (timestamp, world) => {
   Map.fold(
     world.players,
@@ -199,6 +200,8 @@ let shouldCreatePlayer = (timestamp, world) => {
   (happens, {...world, createPlayerDistribution: newDistribution});
 };
 
+// We should probably remove the players that don't play anymore to keep the performance ok
+// To do this, maybe we should not allow forever playing players?
 let playersThatJoinAGame = (timestamp, world) =>
   Map.fold(
     world.players,

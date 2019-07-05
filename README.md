@@ -12,7 +12,7 @@ Then run the `esy` command from this project root to install and build depenenci
 
     % esy
 
-Now you can run the program with `esy x Hello`
+Now you can run the program with `esy x Generator`
 
 ## TODO
 

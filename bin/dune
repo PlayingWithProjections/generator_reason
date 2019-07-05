@@ -1,5 +1,5 @@
 (executable
  (package quizzy-stream)
- (name Hello)
- (public_name Hello)
+ (name Generator)
+ (public_name Generator)
  (libraries lib))

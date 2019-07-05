@@ -28,8 +28,8 @@ module Player = {
   type t = {
     id: Uuid.t,
     playerType,
-    createQuizDistribution: Distribution.MonthDistribution.t,
-    joinGameDistribution: Distribution.MonthDistribution.t,
+    mutable createQuizDistribution: Distribution.MonthDistribution.t,
+    mutable joinGameDistribution: Distribution.MonthDistribution.t,
   };
   let create =
       (~id, ~playerType, ~createQuizDistribution, ~joinGameDistribution) => {
@@ -59,7 +59,8 @@ module Player = {
         timestamp,
         player.createQuizDistribution,
       );
-    (shouldCreateQuiz, {...player, createQuizDistribution});
+    player.createQuizDistribution = createQuizDistribution;
+    shouldCreateQuiz;
   };
 
   let shouldJoinGame = (timestamp, player) => {
@@ -68,7 +69,8 @@ module Player = {
         timestamp,
         player.joinGameDistribution,
       );
-    (shouldJoinGame, {...player, joinGameDistribution});
+    player.joinGameDistribution = joinGameDistribution;
+    shouldJoinGame;
   };
 };
 
@@ -85,26 +87,22 @@ module Game = {
   };
 };
 
-type playerMap = Map.t(Uuid.t, Player.t, Uuid.comparator_witness);
-
 type t = {
   playerDistribution:
     Distribution.PercentageDistribution.t(Player.playerType),
-  createPlayerDistribution: Distribution.MonthDistribution.t,
-  players: playerMap,
+  mutable createPlayerDistribution: Distribution.MonthDistribution.t,
+  players: list(Player.t),
   quizzes: list(Quiz.t),
 };
 
 let init = (~playerDistribution, ~createPlayerDistribution) => {
   playerDistribution,
   createPlayerDistribution,
-  players: Map.empty((module Uuid)),
+  players: [],
   quizzes: [],
 };
 
-let createPlayer = world => {
-  let playerType =
-    Distribution.PercentageDistribution.pick(world.playerDistribution);
+let createPlayerWithType = (~world, ~playerType) => {
   let id = Uuid.generateId();
   let createQuizDistribution =
     switch (playerType) {
@@ -146,9 +144,15 @@ let createPlayer = world => {
   | Player.Normal
   | Player.BotAlwasyCorrect => (
       id,
-      {...world, players: Map.set(world.players, ~key=id, ~data=player)},
+      {...world, players: [player, ...world.players]},
     )
   };
+};
+
+let createPlayer = world => {
+  let playerType =
+    Distribution.PercentageDistribution.pick(world.playerDistribution);
+  createPlayerWithType(~world, ~playerType);
 };
 
 let createQuiz = world => {
@@ -167,29 +171,7 @@ let createQuiz = world => {
   (id, questions, {...world, quizzes: [quiz, ...world.quizzes]});
 };
 
-let playersOpeningGame = world => Map.data(world.players);
-
-// We should probably remove the players that don't create a quiz anymore to keep the performance ok
-let playersCreatingQuiz = (timestamp, world) => {
-  Map.fold(
-    world.players,
-    ~init=(world, []),
-    ~f=(~key as _, ~data as player, (world, playersCreatingQuiz)) => {
-      let (shouldCreate, player) =
-        Player.shouldCreateQuiz(timestamp, player);
-      let playersCreatingQuiz =
-        shouldCreate ? [player, ...playersCreatingQuiz] : playersCreatingQuiz;
-      (
-        {
-          ...world,
-          players:
-            Map.set(world.players, ~key=player.Player.id, ~data=player),
-        },
-        playersCreatingQuiz,
-      );
-    },
-  );
-};
+let playersOpeningGame = world => world.players;
 
 let shouldCreatePlayer = (timestamp, world) => {
   let (happens, newDistribution) =
@@ -197,28 +179,23 @@ let shouldCreatePlayer = (timestamp, world) => {
       timestamp,
       world.createPlayerDistribution,
     );
-  (happens, {...world, createPlayerDistribution: newDistribution});
+  world.createPlayerDistribution = newDistribution;
+  happens
 };
 
 // We should probably remove the players that don't play anymore to keep the performance ok
 // To do this, maybe we should not allow forever playing players?
-let playersThatJoinAGame = (timestamp, world) =>
-  Map.fold(
-    world.players,
-    ~init=(world, []),
-    ~f=(~key as _, ~data as player, (world, playersJoiningGame)) => {
-      let (shouldJoin, player) = Player.shouldJoinGame(timestamp, player);
-      let playersJoiningGame =
-        shouldJoin ? [player, ...playersJoiningGame] : playersJoiningGame;
-      (
-        {
-          ...world,
-          players:
-            Map.set(world.players, ~key=player.Player.id, ~data=player),
-        },
-        playersJoiningGame,
-      );
-    },
+let playersThatJoinAGame = (timestamp, world) => {
+  List.filter_map(world.players, ~f=player =>
+    Player.shouldJoinGame(timestamp, player) ? Some(player) : None
   );
+};
+
+// We should probably remove the players that don't create a quiz anymore to keep the performance ok
+let playersCreatingQuiz = (timestamp, world) => {
+  List.filter_map(world.players, ~f=player =>
+    Player.shouldCreateQuiz(timestamp, player) ? Some(player) : None
+  );
+};
 
 let pickQuiz = world => Distribution.randomFromList(world.quizzes);

@@ -67,7 +67,7 @@ let playGame = (player, world, timestamp) => {
           }),
       ),
     ];
-    let (world, playersJoining) =
+    let playersJoining =
       World.playersThatJoinAGame(timestamp, world);
     let timestampPlusFiveMinutes = timestamp +. fiveMinutes;
     let events =
@@ -207,8 +207,7 @@ let createPlayer = (timestamp, world) => {
 };
 
 let createPlayerHandler = (timestamp, world) => {
-  let (happens, world) = World.shouldCreatePlayer(timestamp, world);
-  if (happens) {
+  if (World.shouldCreatePlayer(timestamp, world)) {
     let (world, playerHasRegistered) = createPlayer(timestamp, world);
     (world, [playerHasRegistered]);
   } else {
@@ -217,7 +216,7 @@ let createPlayerHandler = (timestamp, world) => {
 };
 
 let createQuizHandler = (timestamp, world) => {
-  let (world, playersCreatingQuiz) =
+  let playersCreatingQuiz =
     World.playersCreatingQuiz(timestamp, world);
   List.fold_left(
     ~init=(world, []),
@@ -277,7 +276,7 @@ let rec run = (timestamp, endTimestamp, events, world) =>
   };
 
 let hello = () => {
-  let period = CalendarLib.Calendar.Precise.Period.day(20);
+  let period = CalendarLib.Calendar.Precise.Period.day(40);
   let (startTimestamp, endTimestamp) = timestampRange(period);
   let playerDistribution = {
     Distribution.(
@@ -293,11 +292,9 @@ let hello = () => {
   let createPlayerDistribution = {
     let m =
       Distribution.MDistribution.init(startTimestamp)
-      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(45))
-      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(45))
-      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(45))
-      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(45))
-      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(45))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(500))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(500))
+      /* |> Distribution.MDistribution.add(~data=Distribution.PerMonth(500)) */
       |> Distribution.MDistribution.build;
     Distribution.MonthDistribution.ForEver(
       Distribution.MonthDistribution.Spread(m),

@@ -4,6 +4,7 @@ module Uuid_T = {
   let compare = Uuidm.compare;
 
   let sexp_of_t = (t): Base.Sexp.t => Base.Sexp.Atom(Uuidm.to_string(t));
+  let hash = t => Uuidm.to_bytes(t) |> Base.String.hash;
 };
 
 include Uuid_T;

@@ -67,8 +67,7 @@ let playGame = (player, world, timestamp) => {
           }),
       ),
     ];
-    let playersJoining =
-      World.playersThatJoinAGame(timestamp, world);
+    let playersJoining = World.playersThatJoinAGame(timestamp, world);
     let timestampPlusFiveMinutes = timestamp +. fiveMinutes;
     let events =
       switch (playersJoining) {
@@ -206,18 +205,16 @@ let createPlayer = (timestamp, world) => {
   );
 };
 
-let createPlayerHandler = (timestamp, world) => {
+let createPlayerHandler = (timestamp, world) =>
   if (World.shouldCreatePlayer(timestamp, world)) {
     let (world, playerHasRegistered) = createPlayer(timestamp, world);
     (world, [playerHasRegistered]);
   } else {
     (world, []);
   };
-};
 
 let createQuizHandler = (timestamp, world) => {
-  let playersCreatingQuiz =
-    World.playersCreatingQuiz(timestamp, world);
+  let playersCreatingQuiz = World.playersCreatingQuiz(timestamp, world);
   List.fold_left(
     ~init=(world, []),
     ~f=

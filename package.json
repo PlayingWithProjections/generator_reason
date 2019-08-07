@@ -34,9 +34,7 @@
     "@opam/odoc": "*"
   },
   "resolutions": {
-    "@opam/reason":
-      "let-def/reason:reason.opam#879d58746b4d74179487e7e3fe96dd2cc553c837",
     "@opam/merlin-lsp":
-      "github:ocaml/merlin:merlin-lsp.opam#5af6d2dccc94dd6baad984c725fab3166e96fa7a"
+      "github:ocaml/merlin:merlin-lsp.opam#bd94d345bf19e612c11737de2d7d401bcc4348a6"
   }
 }

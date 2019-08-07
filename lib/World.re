@@ -180,7 +180,7 @@ let shouldCreatePlayer = (timestamp, world) => {
       world.createPlayerDistribution,
     );
   world.createPlayerDistribution = newDistribution;
-  happens
+  happens;
 };
 
 // We should probably remove the players that don't play anymore to keep the performance ok

@@ -16,6 +16,12 @@ Now you can run the program with `esy x Generator`
 
 ## TODO
 
+refactorings needed
+
+* [ ] add rei files for everything
+* [ ] discover better names for the distributions
+* [ ] make the month distribution mutable so that distribution is responsible for changing it
+
 This is a working list, more todos will probably be needed
 
 * [x] make sure the events are in the correct order

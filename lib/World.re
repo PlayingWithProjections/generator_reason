@@ -28,18 +28,38 @@ module Player = {
   type t = {
     id: Uuid.t,
     playerType,
+    answerType,
     mutable createQuizDistribution: Distribution.MonthDistribution.t,
     mutable joinGameDistribution: Distribution.MonthDistribution.t,
+  }
+  and answerType = {
+    delay: float,
+    delayRange: float,
+    correctness: float,
   };
   let create =
-      (~id, ~playerType, ~createQuizDistribution, ~joinGameDistribution) => {
+      (
+        ~id,
+        ~playerType,
+        ~answerType,
+        ~createQuizDistribution,
+        ~joinGameDistribution,
+      ) => {
     id,
     playerType,
     createQuizDistribution,
     joinGameDistribution,
+    answerType,
   };
   let answerQuestion = player => {
-    let speed = Random.float(60. *. 2.);
+    let maximumTime = 120.;
+    let speed =
+      Distribution.gaussianCapped(
+        ~mu=player.answerType.delay *. maximumTime,
+        ~sigma=player.answerType.delayRange *. maximumTime,
+        ~lowerBound=0.,
+        ~upperBound=maximumTime,
+      );
     switch (player.playerType) {
     | BotAlwasyCorrect => `AnswerCorrectly(speed)
     | NeverPlayer => `AnswerTimeout
@@ -132,10 +152,25 @@ let createPlayerWithType = (~world, ~playerType) => {
         Distribution.MonthDistribution.Steady(Distribution.PerDay(10)),
       )
     };
+  let answerType =
+    switch (playerType) {
+    | Player.NeverPlayer => {
+        Player.delay: 1.,
+        delayRange: 0.,
+        correctness: 0.,
+      }
+    | Player.Normal => {Player.delay: 0.8, delayRange: 0.5, correctness: 0.5}
+    | Player.BotAlwasyCorrect => {
+        Player.delay: 0.,
+        delayRange: 0.1,
+        correctness: 1.,
+      }
+    };
   let player =
     Player.create(
       ~id,
       ~playerType,
+      ~answerType,
       ~createQuizDistribution,
       ~joinGameDistribution,
     );

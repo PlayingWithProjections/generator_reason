@@ -193,3 +193,18 @@ let randomFromList = l => {
     Some(List.nth_exn(l, i));
   };
 };
+
+let gaussianCapped = (~mu, ~sigma, ~lowerBound, ~upperBound) => {
+  open! Poly;
+  /* https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform */
+  let r =
+    mu
+    +. sigma
+    *. Float.sqrt((-2.) *. Float.log(Random.float(1.)))
+    *. Float.cos(2. *. Float.pi *. Random.float(1.));
+  switch (r < lowerBound, r > upperBound) {
+  | (true, _) => lowerBound
+  | (_, true) => upperBound
+  | _ => r
+  };
+};

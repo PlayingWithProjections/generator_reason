@@ -41,5 +41,8 @@ module PercentageDistribution: {
   let pick: t('a) => 'a;
 };
 
+let gaussianCapped:
+  (~mu: float, ~sigma: float, ~lowerBound: float, ~upperBound: float) => float;
+
 let happens: frequency => bool;
 let randomFromList: list('a) => option('a);

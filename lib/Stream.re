@@ -5,12 +5,9 @@ let hello = () => {
   let playerDistribution = {
     Distribution.(
       PercentageDistribution.empty()
-      |> PercentageDistribution.add(
-           ~i=5,
-           ~outcome=World.Player.BotAlwasyCorrect,
+      |> PercentageDistribution.rest(
+           ~outcome=PlayerType.alwaysPlayingAndAlwaysWinningBot(),
          )
-      |> PercentageDistribution.add(~i=10, ~outcome=World.Player.NeverPlayer)
-      |> PercentageDistribution.rest(~outcome=World.Player.Normal)
     );
   };
   let createPlayerDistribution = {
@@ -20,9 +17,8 @@ let hello = () => {
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(500))
       /* |> Distribution.MDistribution.add(~data=Distribution.PerMonth(500)) */
       |> Distribution.MDistribution.build;
-    Distribution.MonthDistribution.ForEver(
-      Distribution.Spread(m),
-    ) |> Distribution.MonthDistribution.create
+    Distribution.MonthDistribution.ForEver(Distribution.Spread(m))
+    |> Distribution.MonthDistribution.create;
   };
   let events =
     Simulation.create(

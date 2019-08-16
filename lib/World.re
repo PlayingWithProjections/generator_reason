@@ -21,32 +21,15 @@ module Quiz = {
 };
 
 module Player = {
-  type playerType =
-    | NeverPlayer
-    | Normal
-    | BotAlwasyCorrect;
   type t = {
     id: Uuid.t,
-    playerType,
-    answerType,
+    answerType: PlayerType.answerType,
     createQuizDistribution: Distribution.MonthDistribution.t,
     joinGameDistribution: Distribution.MonthDistribution.t,
-  }
-  and answerType = {
-    delay: float,
-    delayRange: float,
-    correctness: float,
   };
   let create =
-      (
-        ~id,
-        ~playerType,
-        ~answerType,
-        ~createQuizDistribution,
-        ~joinGameDistribution,
-      ) => {
+      (~id, ~answerType, ~createQuizDistribution, ~joinGameDistribution) => {
     id,
-    playerType,
     createQuizDistribution,
     joinGameDistribution,
     answerType,
@@ -60,31 +43,31 @@ module Player = {
         ~lowerBound=0.,
         ~upperBound=maximumTime,
       );
-    switch (player.playerType) {
-    | BotAlwasyCorrect => `AnswerCorrectly(speed)
-    | NeverPlayer => `AnswerTimeout
-    | Normal =>
-      open! Poly;
-      switch (Random.float(1.)) {
-      | x when x >= 0.9 => `AnswerCorrectly(speed)
-      | x when x >= 0.7 => `AnswerTimeout
-      | _ => `AnswerIncorrectly(speed)
+    if (Float.compare(maximumTime, speed) == 0) {
+      `AnswerTimeout;
+    } else {
+      let correct =
+        Float.compare(Random.float(player.answerType.correctness), 0.5) > 0;
+      if (correct) {
+        `AnswerCorrectly(speed);
+      } else {
+        `AnswerIncorrectly(speed);
       };
     };
   };
 
   let shouldCreateQuiz = (timestamp, player) => {
-      Distribution.MonthDistribution.happens(
-        timestamp,
-        player.createQuizDistribution,
-      );
+    Distribution.MonthDistribution.happens(
+      timestamp,
+      player.createQuizDistribution,
+    );
   };
 
   let shouldJoinGame = (timestamp, player) => {
-      Distribution.MonthDistribution.happens(
-        timestamp,
-        player.joinGameDistribution,
-      );
+    Distribution.MonthDistribution.happens(
+      timestamp,
+      player.joinGameDistribution,
+    );
   };
 };
 
@@ -102,8 +85,7 @@ module Game = {
 };
 
 type t = {
-  playerDistribution:
-    Distribution.PercentageDistribution.t(Player.playerType),
+  playerDistribution: Distribution.PercentageDistribution.t(PlayerType.t),
   createPlayerDistribution: Distribution.MonthDistribution.t,
   players: list(Player.t),
   quizzes: list(Quiz.t),
@@ -118,64 +100,14 @@ let init = (~playerDistribution, ~createPlayerDistribution) => {
 
 let createPlayerWithType = (~world, ~playerType) => {
   let id = Uuid.generateId();
-  let createQuizDistribution =
-    switch (playerType) {
-    | Player.NeverPlayer => Distribution.MonthDistribution.Never
-    | Player.Normal =>
-      Distribution.MonthDistribution.ForEver(
-        Distribution.Steady(Distribution.PerMonth(10)),
-      )
-
-    | Player.BotAlwasyCorrect =>
-      Distribution.MonthDistribution.Number(
-        100,
-        Distribution.Steady(Distribution.PerDay(10)),
-      )
-    } |> Distribution.MonthDistribution.create;
-  let joinGameDistribution =
-    switch (playerType) {
-    | Player.NeverPlayer => Distribution.MonthDistribution.Never
-    | Player.Normal =>
-      Distribution.MonthDistribution.ForEver(
-        Distribution.Steady(Distribution.PerMonth(10)),
-      )
-
-    | Player.BotAlwasyCorrect =>
-      Distribution.MonthDistribution.Number(
-        100,
-        Distribution.Steady(Distribution.PerDay(10)),
-      )
-    } |> Distribution.MonthDistribution.create;
-  let answerType =
-    switch (playerType) {
-    | Player.NeverPlayer => {
-        Player.delay: 1.,
-        delayRange: 0.,
-        correctness: 0.,
-      }
-    | Player.Normal => {Player.delay: 0.8, delayRange: 0.5, correctness: 0.5}
-    | Player.BotAlwasyCorrect => {
-        Player.delay: 0.,
-        delayRange: 0.1,
-        correctness: 1.,
-      }
-    };
   let player =
     Player.create(
       ~id,
-      ~playerType,
-      ~answerType,
-      ~createQuizDistribution,
-      ~joinGameDistribution,
+      ~answerType=playerType.PlayerType.answerType,
+      ~createQuizDistribution=playerType.createQuizDistribution,
+      ~joinGameDistribution=playerType.joinGameDistribution,
     );
-  switch (player.Player.playerType) {
-  | Player.NeverPlayer => (id, world)
-  | Player.Normal
-  | Player.BotAlwasyCorrect => (
-      id,
-      {...world, players: [player, ...world.players]},
-    )
-  };
+  (id, {...world, players: [player, ...world.players]});
 };
 
 let createPlayer = world => {
@@ -203,10 +135,10 @@ let createQuiz = world => {
 let playersOpeningGame = world => world.players;
 
 let shouldCreatePlayer = (timestamp, world) => {
-    Distribution.MonthDistribution.happens(
-      timestamp,
-      world.createPlayerDistribution,
-    );
+  Distribution.MonthDistribution.happens(
+    timestamp,
+    world.createPlayerDistribution,
+  );
 };
 
 // We should probably remove the players that don't play anymore to keep the performance ok

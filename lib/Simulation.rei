@@ -6,9 +6,7 @@ type t = {
 let create:
   (
     ~timeRange: TimeRange.t,
-    ~playerDistribution: Distribution.PercentageDistribution.t(
-                           World.Player.playerType,
-                         ),
+    ~playerDistribution: Distribution.PercentageDistribution.t(PlayerType.t),
     ~createPlayerDistribution: Distribution.MonthDistribution.t
   ) =>
   t;

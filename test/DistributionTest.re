@@ -9,9 +9,8 @@ describe("month distribution", ({test}) => {
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(0))
       |> Distribution.MDistribution.build;
     let distribution =
-      Distribution.MonthDistribution.ForEver(
-        Distribution.Spread(m),
-      ) |> Distribution.MonthDistribution.create;
+      Distribution.MonthDistribution.ForEver(Distribution.Spread(m))
+      |> Distribution.MonthDistribution.create;
     let result =
       Distribution.MonthDistribution.happens(timestamp, distribution);
 
@@ -24,9 +23,8 @@ describe("month distribution", ({test}) => {
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(10000))
       |> Distribution.MDistribution.build;
     let distribution =
-      Distribution.MonthDistribution.ForEver(
-        Distribution.Spread(m),
-      ) |> Distribution.MonthDistribution.create;
+      Distribution.MonthDistribution.ForEver(Distribution.Spread(m))
+      |> Distribution.MonthDistribution.create;
     let result =
       Distribution.MonthDistribution.happens(timestamp, distribution);
 

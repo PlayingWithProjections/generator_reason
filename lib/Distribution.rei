@@ -18,17 +18,18 @@ module MDistribution: {
   let add: (partial, ~data: frequency) => partial;
   let build: partial => t;
 };
+type distribution =
+  | Steady(frequency)
+  | Spread(MDistribution.t);
 
 module MonthDistribution: {
-  type t =
+  type t;
+  type u =
     | Number(int, distribution)
     | Never
-    | ForEver(distribution)
-  and distribution =
-    | Steady(frequency)
-    | Spread(MDistribution.t);
-
-  let happens: (float, t) => (bool, t);
+    | ForEver(distribution);
+  let create: u => t;
+  let happens: (float, t) => bool;
 };
 
 module PercentageDistribution: {

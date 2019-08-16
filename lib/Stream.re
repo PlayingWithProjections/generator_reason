@@ -21,8 +21,8 @@ let hello = () => {
       /* |> Distribution.MDistribution.add(~data=Distribution.PerMonth(500)) */
       |> Distribution.MDistribution.build;
     Distribution.MonthDistribution.ForEver(
-      Distribution.MonthDistribution.Spread(m),
-    );
+      Distribution.Spread(m),
+    ) |> Distribution.MonthDistribution.create
   };
   let events =
     Simulation.create(

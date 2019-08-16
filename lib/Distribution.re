@@ -104,14 +104,29 @@ module MDistribution = {
   let build = ((t, _)) => t;
 };
 
+type distribution =
+  | Steady(frequency)
+  | Spread(MDistribution.t);
+
 module MonthDistribution = {
-  type t =
+  type t = {
+    distribution,
+    mutable number: int,
+  };
+
+  type u =
     | Number(int, distribution)
     | Never
-    | ForEver(distribution)
-  and distribution =
-    | Steady(frequency)
-    | Spread(MDistribution.t);
+    | ForEver(distribution);
+
+  let create = u => {
+    switch (u) {
+    | Never => {distribution: Steady(PerMonth(0)), number: 0}
+    | Number(number, distribution) => {distribution, number}
+    | ForEver(distribution) => {distribution, number: 1000000000}
+    };
+  };
+
   let happens = (timestamp, t) => {
     let trueOrFalse = distribution => {
       switch (distribution) {
@@ -124,16 +139,11 @@ module MonthDistribution = {
         };
       };
     };
-    switch (t) {
-    | Never => (false, t)
-    | ForEver(distribution) => (trueOrFalse(distribution), t)
-    | Number(0, _) => (false, t)
-    | Number(x, distribution) =>
-      if (trueOrFalse(distribution)) {
-        (true, Number(x - 1, distribution));
-      } else {
-        (false, Number(x, distribution));
-      }
+    if (t.number > 0 && trueOrFalse(t.distribution)) {
+      t.number = t.number - 1;
+      true;
+    } else {
+      false;
     };
   };
 };

@@ -29,8 +29,8 @@ module Player = {
     id: Uuid.t,
     playerType,
     answerType,
-    mutable createQuizDistribution: Distribution.MonthDistribution.t,
-    mutable joinGameDistribution: Distribution.MonthDistribution.t,
+    createQuizDistribution: Distribution.MonthDistribution.t,
+    joinGameDistribution: Distribution.MonthDistribution.t,
   }
   and answerType = {
     delay: float,
@@ -74,23 +74,17 @@ module Player = {
   };
 
   let shouldCreateQuiz = (timestamp, player) => {
-    let (shouldCreateQuiz, createQuizDistribution) =
       Distribution.MonthDistribution.happens(
         timestamp,
         player.createQuizDistribution,
       );
-    player.createQuizDistribution = createQuizDistribution;
-    shouldCreateQuiz;
   };
 
   let shouldJoinGame = (timestamp, player) => {
-    let (shouldJoinGame, joinGameDistribution) =
       Distribution.MonthDistribution.happens(
         timestamp,
         player.joinGameDistribution,
       );
-    player.joinGameDistribution = joinGameDistribution;
-    shouldJoinGame;
   };
 };
 
@@ -110,7 +104,7 @@ module Game = {
 type t = {
   playerDistribution:
     Distribution.PercentageDistribution.t(Player.playerType),
-  mutable createPlayerDistribution: Distribution.MonthDistribution.t,
+  createPlayerDistribution: Distribution.MonthDistribution.t,
   players: list(Player.t),
   quizzes: list(Quiz.t),
 };
@@ -129,29 +123,29 @@ let createPlayerWithType = (~world, ~playerType) => {
     | Player.NeverPlayer => Distribution.MonthDistribution.Never
     | Player.Normal =>
       Distribution.MonthDistribution.ForEver(
-        Distribution.MonthDistribution.Steady(Distribution.PerMonth(10)),
+        Distribution.Steady(Distribution.PerMonth(10)),
       )
 
     | Player.BotAlwasyCorrect =>
       Distribution.MonthDistribution.Number(
         100,
-        Distribution.MonthDistribution.Steady(Distribution.PerDay(10)),
+        Distribution.Steady(Distribution.PerDay(10)),
       )
-    };
+    } |> Distribution.MonthDistribution.create;
   let joinGameDistribution =
     switch (playerType) {
     | Player.NeverPlayer => Distribution.MonthDistribution.Never
     | Player.Normal =>
       Distribution.MonthDistribution.ForEver(
-        Distribution.MonthDistribution.Steady(Distribution.PerMonth(10)),
+        Distribution.Steady(Distribution.PerMonth(10)),
       )
 
     | Player.BotAlwasyCorrect =>
       Distribution.MonthDistribution.Number(
         100,
-        Distribution.MonthDistribution.Steady(Distribution.PerDay(10)),
+        Distribution.Steady(Distribution.PerDay(10)),
       )
-    };
+    } |> Distribution.MonthDistribution.create;
   let answerType =
     switch (playerType) {
     | Player.NeverPlayer => {
@@ -209,13 +203,10 @@ let createQuiz = world => {
 let playersOpeningGame = world => world.players;
 
 let shouldCreatePlayer = (timestamp, world) => {
-  let (happens, newDistribution) =
     Distribution.MonthDistribution.happens(
       timestamp,
       world.createPlayerDistribution,
     );
-  world.createPlayerDistribution = newDistribution;
-  happens;
 };
 
 // We should probably remove the players that don't play anymore to keep the performance ok

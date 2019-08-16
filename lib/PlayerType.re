@@ -20,3 +20,13 @@ let alwaysPlayingAndAlwaysWinningBot = () => {
   let answerType = {delay: 0., delayRange: 0.1, correctness: 1.};
   {createQuizDistribution, joinGameDistribution, answerType};
 };
+
+let creatingQuizButNeverPlaying = () => {
+  let createQuizDistribution =
+    MonthDistribution.ForEver(Steady(PerMonth(10)))
+    |> MonthDistribution.create;
+  let joinGameDistribution =
+    MonthDistribution.Never |> MonthDistribution.create;
+  let answerType = {delay: 0., delayRange: 0., correctness: 0.};
+  {createQuizDistribution, joinGameDistribution, answerType};
+};

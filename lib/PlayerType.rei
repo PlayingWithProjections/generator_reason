@@ -10,3 +10,4 @@ and answerType = {
 };
 
 let alwaysPlayingAndAlwaysWinningBot: unit => t;
+let creatingQuizButNeverPlaying: unit => t;

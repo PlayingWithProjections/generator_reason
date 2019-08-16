@@ -5,6 +5,10 @@ let hello = () => {
   let playerDistribution = {
     Distribution.(
       PercentageDistribution.empty()
+      |> PercentageDistribution.add(
+           ~i=1,
+           ~outcome=PlayerType.creatingQuizButNeverPlaying(),
+         )
       |> PercentageDistribution.rest(
            ~outcome=PlayerType.alwaysPlayingAndAlwaysWinningBot(),
          )

@@ -1,7 +1,7 @@
 (library
  (name lib)
  (flags
-  (:standard -w +A-42-48 -warn-error +A-3-44))
+  (:standard -w +A-40-42-48 -warn-error +A-3-44))
  (public_name quizzy-stream)
  (libraries console.lib pastel.lib calendar uuidm base yojson ptime)
  (preprocess

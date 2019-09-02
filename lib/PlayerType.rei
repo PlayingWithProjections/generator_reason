@@ -11,3 +11,6 @@ and answerType = {
 
 let alwaysPlayingAndAlwaysWinningBot: unit => t;
 let creatingQuizButNeverPlaying: unit => t;
+let boringPlayer: unit => t;
+let veryGoodQuizPlayer: unit => t;
+let goodQuizPlayer: unit => t;

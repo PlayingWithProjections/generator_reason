@@ -118,6 +118,7 @@ let createPlayer = world => {
 
 let createQuiz = world => {
   let generateRandomAmountOfQuestions = () => {
+  	/* TODO: between 1 and 10 questions */
     let nbOfQuestions = Random.int(10);
     List.map(
       ~f=
@@ -129,7 +130,8 @@ let createQuiz = world => {
   let id = Uuid.generateId();
   let questions = generateRandomAmountOfQuestions();
   let quiz = Quiz.create(~id, ~questions);
-  (id, questions, {...world, quizzes: [quiz, ...world.quizzes]});
+  let quizTitle = Faker.quizName();
+  (id, quizTitle, questions, {...world, quizzes: [quiz, ...world.quizzes]});
 };
 
 let playersOpeningGame = world => world.players;

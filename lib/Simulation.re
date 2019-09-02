@@ -5,12 +5,12 @@ let fiveMinutes = 60. *. 5.;
 let twoMinutes = 60. *. 2.;
 
 let createQuiz = (ownerId, timestamp, world) => {
-  let (quizId, questions, world) = World.createQuiz(world);
+  let (quizId, quizTitle, questions, world) = World.createQuiz(world);
   let timestamp = timestamp +. Random.float(fiveMinutes);
   let createEvent =
     Events.create(
       ~timestamp,
-      ~type_=Events.QuizWasCreated({quizId, ownerId, quizTitle: "Todo"}),
+      ~type_=Events.QuizWasCreated({quizId, ownerId, quizTitle}),
     );
   let (events, timestamp) =
     List.fold_left(

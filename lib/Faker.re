@@ -10,6 +10,13 @@ let quizzes = [|
 |];
 let quizzesLength = Array.length(quizzes);
 
+let funnyNameLength = Array.length(FakerData.funnyNames);
+let hackerVerbsLength = Array.length(FakerData.hackerVerbs);
+let quizName = () =>
+  FakerData.hackerVerbs[Random.int(hackerVerbsLength)]
+  ++ " "
+  ++ FakerData.funnyNames[Random.int(funnyNameLength)];
+
 let quiz = nbOfQuestions => {
   let arrayPicker = arr => {
     let arrLength = Array.length(arr);

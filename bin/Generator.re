@@ -6,6 +6,12 @@ let createDir = dir => {
   ();
 };
 
-Console.log("Running Test Program:");
+Console.log("Running Generator");
 let () = createDir("data");
-let () = Lib.Stream.hello();
+Console.log("Generating basic file...");
+let () = Lib.Stream.basic();
+Console.log("Generating full file...");
+Console.log("Hang on, this might take a bit");
+Console.log("While waiting, you can start the excercises with the basic file");
+let () = Lib.Stream.full();
+Console.log("Done");

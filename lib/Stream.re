@@ -39,7 +39,7 @@ let basic = () => {
 };
 
 let full = () => {
-  let timeRange = TimeRange.daysUntilNow(~days=366);
+  let timeRange = TimeRange.daysUntilNow(~days=190);
   let playerDistribution = {
     Distribution.(
       PercentageDistribution.empty()
@@ -73,12 +73,6 @@ let full = () => {
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(50))
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(60))
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(90))
-      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(120))
-      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(150))
-      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(140))
-      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(100))
-      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(80))
-      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(60))
       |> Distribution.MDistribution.build;
     Distribution.MonthDistribution.ForEver(Distribution.Spread(m))
     |> Distribution.MonthDistribution.create;

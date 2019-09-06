@@ -19,7 +19,6 @@
     "@opam/dune": "*",
     "@opam/ppx_deriving": "4.2.1",
     "@opam/ptime": "0.8.5",
-    "@opam/uuidm": "0.9.7",
     "@opam/yojson": "1.5.0",
     "@reason-native/console": "*",
     "@reason-native/pastel": "*",

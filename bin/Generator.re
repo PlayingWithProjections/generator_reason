@@ -1,3 +1,7 @@
+open! Base;
+
+Random.full_init([|1,2,3|]);
+
 let createDir = dir => {
   let _ =
     try(Unix.mkdir(dir, 0o740)) {

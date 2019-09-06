@@ -7,9 +7,7 @@ let basic = () => {
            ~i=20,
            ~outcome=PlayerType.creatingQuizButNeverPlaying(),
          )
-      |> PercentageDistribution.rest(
-           ~outcome=PlayerType.boringPlayer(),
-         )
+      |> PercentageDistribution.rest(~outcome=PlayerType.boringPlayer())
     );
   };
   let createPlayerDistribution = {
@@ -47,19 +45,17 @@ let full = () => {
          )
       |> PercentageDistribution.add(
            ~i=2,
-           ~outcome=PlayerType.alwaysPlayingAndAlwaysWinningBot()
+           ~outcome=PlayerType.alwaysPlayingAndAlwaysWinningBot(),
          )
       |> PercentageDistribution.add(
            ~i=1,
-           ~outcome=PlayerType.veryGoodQuizPlayer()
+           ~outcome=PlayerType.veryGoodQuizPlayer(),
          )
       |> PercentageDistribution.add(
            ~i=5,
-           ~outcome=PlayerType.goodQuizPlayer()
+           ~outcome=PlayerType.goodQuizPlayer(),
          )
-      |> PercentageDistribution.rest(
-           ~outcome=PlayerType.boringPlayer(),
-         )
+      |> PercentageDistribution.rest(~outcome=PlayerType.boringPlayer())
     );
   };
   let createPlayerDistribution = {

@@ -116,7 +116,7 @@ let createPlayer = world => {
 
 let createQuiz = world => {
   let generateRandomAmountOfQuestions = () => {
-  	/* TODO: between 1 and 10 questions */
+    /* TODO: between 1 and 10 questions */
     let nbOfQuestions = Random.int(10);
     List.map(
       ~f=

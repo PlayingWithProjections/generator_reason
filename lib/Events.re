@@ -1,5 +1,6 @@
 let memory = Bytes.of_string("2000-00-00T00:00:00Z");
-let set = (pos, int) => Bytes.unsafe_set(memory, pos, Char.of_int_exn(48 + int));
+let set = (pos, int) =>
+  Bytes.unsafe_set(memory, pos, Char.of_int_exn(48 + int));
 
 let format =
     ({Unix.tm_year, tm_mon, tm_mday, tm_hour, tm_min, tm_sec, _}: Unix.tm) => {

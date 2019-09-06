@@ -1,5 +1,3 @@
-open! Base;
-
 let basic = () => {
   let timeRange = TimeRange.daysUntilNow(~days=90);
   let playerDistribution = {

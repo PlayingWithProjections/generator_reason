@@ -1,5 +1,3 @@
-open! Base;
-
 /* code taken from https://github.com/dbuenzli/uuidm and adapted for use with Base */
 
 type t = string;

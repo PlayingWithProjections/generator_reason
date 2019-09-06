@@ -1,5 +1,3 @@
-open! Base;
-
 type t;
 
 let generateId: unit => t;

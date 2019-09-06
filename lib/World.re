@@ -1,5 +1,3 @@
-open! Base;
-
 module Quiz = {
   type quizType =
     | Normal

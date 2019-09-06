@@ -1,5 +1,3 @@
-open! Base;
-
 let month_int = date => {
   let month = CalendarLib.Calendar.Precise.month(date);
   switch (month) {

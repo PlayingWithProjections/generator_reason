@@ -1,5 +1,3 @@
-open! Base;
-
 let tenMinutes = 60. *. 10.;
 let fiveMinutes = 60. *. 5.;
 let twoMinutes = 60. *. 2.;

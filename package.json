@@ -16,7 +16,6 @@
     "@esy-ocaml/reason": "*",
     "@opam/base": "v0.12.2",
     "@opam/calendar": "2.04",
-    "@opam/down": "0.0.2",
     "@opam/dune": "*",
     "@opam/ppx_deriving": "4.4",
     "@opam/ptime": "0.8.5",

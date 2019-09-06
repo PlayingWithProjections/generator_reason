@@ -1,5 +1,5 @@
 {
-  "checksum": "19dd61a6826e04edae225a888f20dee8",
+  "checksum": "ab333157199b9ea74fc75125890fd4ba",
   "root": "quizzy-stream@link-dev:./package.json",
   "node": {
     "refmterr@3.2.2@d41d8cd9": {
@@ -40,7 +40,7 @@
         "@opam/yojson@opam:1.5.0@45b942d4", "@opam/rtop@opam:3.5.0@810d71c8",
         "@opam/ptime@opam:0.8.5@0051d642",
         "@opam/ppx_deriving@opam:4.4@43678d5a",
-        "@opam/dune@opam:1.11.3@9894df55", "@opam/down@opam:0.0.2@4aae4643",
+        "@opam/dune@opam:1.11.3@9894df55",
         "@opam/calendar@opam:2.04@5110954c",
         "@opam/base@opam:v0.12.2@4eee02b5",
         "@esy-ocaml/reason@3.5.0@d41d8cd9"
@@ -1231,31 +1231,6 @@
         "ocaml@4.6.1000@d41d8cd9", "@opam/base-unix@opam:base@87d0b2eb",
         "@opam/base-threads@opam:base@36803084"
       ]
-    },
-    "@opam/down@opam:0.0.2@4aae4643": {
-      "id": "@opam/down@opam:0.0.2@4aae4643",
-      "name": "@opam/down",
-      "version": "opam:0.0.2",
-      "source": {
-        "type": "install",
-        "source": [
-          "archive:https://opam.ocaml.org/cache/md5/db/dbf05954ba652009bf1de5356145d09f#md5:dbf05954ba652009bf1de5356145d09f",
-          "archive:https://erratique.ch/software/down/releases/down-0.0.2.tbz#md5:dbf05954ba652009bf1de5356145d09f"
-        ],
-        "opam": {
-          "name": "down",
-          "version": "0.0.2",
-          "path": "esy.lock/opam/down.0.0.2"
-        }
-      },
-      "overrides": [],
-      "dependencies": [
-        "ocaml@4.6.1000@d41d8cd9", "@opam/topkg@opam:1.0.1@a42c631e",
-        "@opam/ocamlfind@opam:1.8.1@ff07b0f9",
-        "@opam/ocamlbuild@opam:0.14.0@427a2331",
-        "@esy-ocaml/substs@0.0.1@d41d8cd9"
-      ],
-      "devDependencies": [ "ocaml@4.6.1000@d41d8cd9" ]
     },
     "@opam/cppo@opam:1.6.6@f4f83858": {
       "id": "@opam/cppo@opam:1.6.6@f4f83858",

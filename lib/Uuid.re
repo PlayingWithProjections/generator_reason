@@ -1,5 +1,7 @@
 open! Base;
 
+/* code taken from https://github.com/dbuenzli/uuidm and adapted for use with Base */
+
 type t = string;
 let rand = (s, ()) => Random.State.bits(s); /* 30 random bits generator. */
 let v4_ocaml_random_uuid = rand => {

@@ -1,5 +1,7 @@
 Random.full_init([|1, 2, 3|]);
 
+Console.log(Lib.Uuid.generateId() |> Lib.Uuid.to_string);
+
 let createDir = dir => {
   let _ =
     try(Unix.mkdir(dir, 0o740)) {
@@ -19,3 +21,4 @@ Console.log(
 );
 let () = Lib.Stream.full();
 Console.log("Done");
+Console.log(Lib.Uuid.generateId() |> Lib.Uuid.to_string);

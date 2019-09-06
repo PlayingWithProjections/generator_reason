@@ -1,4 +1,5 @@
 let basic = () => {
+	Console.log(Random.State.default);
   let timeRange = TimeRange.daysUntilNow(~days=90);
   let playerDistribution = {
     Distribution.(
@@ -35,7 +36,8 @@ let basic = () => {
 };
 
 let full = () => {
-  let timeRange = TimeRange.daysUntilNow(~days=190);
+	Console.log(Random.State.default);
+  let timeRange = TimeRange.daysUntilNow(~days=10);
   let playerDistribution = {
     Distribution.(
       PercentageDistribution.empty()

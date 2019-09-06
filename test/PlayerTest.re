@@ -19,7 +19,7 @@ describe("player answers questions", ({test}) => {
     );
 
   test("fast correct player", ({expect}) => {
-    let answerType = {PlayerType.delay: 0., delayRange: 0.1, correctness: 1.};
+    let answerType = {PlayerType.delay: 0., delayRange: 0., correctness: 1.};
     let player = create(answerType);
 
     expect.equal(`AnswerCorrectly(0.), World.Player.answerQuestion(player));

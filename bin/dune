@@ -1,5 +1,7 @@
 (executable
  (package quizzy-stream)
+ (flags
+  (:standard -open Base -w +A-40-42-48 -warn-error +A-3-44))
  (name Generator)
  (public_name Generator)
  (libraries lib))

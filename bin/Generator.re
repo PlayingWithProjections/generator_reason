@@ -1,5 +1,3 @@
-open! Base;
-
 Random.full_init([|1,2,3|]);
 
 let createDir = dir => {

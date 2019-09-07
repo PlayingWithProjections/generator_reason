@@ -37,8 +37,8 @@ module PercentageDistribution: {
   type partial('a);
 
   let empty: unit => partial('a);
-  let add: (partial('a), ~i: int, ~outcome: 'a) => partial('a);
-  let rest: (partial('a), ~outcome: 'a) => t('a);
+  let add: (partial('a), ~i: int, ~outcome: unit => 'a) => partial('a);
+  let rest: (partial('a), ~outcome: unit => 'a) => t('a);
   let pick: t('a) => 'a;
 };
 

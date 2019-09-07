@@ -1,7 +1,5 @@
 Random.full_init([|1, 2, 3|]);
 
-Console.log(Lib.Uuid.generateId() |> Lib.Uuid.to_string);
-
 let createDir = dir => {
   let _ =
     try(Unix.mkdir(dir, 0o740)) {
@@ -16,9 +14,5 @@ Console.log("Generating basic file...");
 let () = Lib.Stream.basic();
 Console.log("Generating full file...");
 Console.log("Hang on, this might take a bit");
-Console.log(
-  "While waiting, you can start the excercises with the basic file",
-);
 let () = Lib.Stream.full();
 Console.log("Done");
-Console.log(Lib.Uuid.generateId() |> Lib.Uuid.to_string);

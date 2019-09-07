@@ -1,6 +1,7 @@
 type t = {
   createQuizDistribution: Distribution.MonthDistribution.t,
   joinGameDistribution: Distribution.MonthDistribution.t,
+  openGameDistribution: Distribution.MonthDistribution.t,
   answerType,
 }
 and answerType = {

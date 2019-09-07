@@ -24,12 +24,20 @@ module Player = {
     answerType: PlayerType.answerType,
     createQuizDistribution: Distribution.MonthDistribution.t,
     joinGameDistribution: Distribution.MonthDistribution.t,
+    openGameDistribution: Distribution.MonthDistribution.t,
   };
   let create =
-      (~id, ~answerType, ~createQuizDistribution, ~joinGameDistribution) => {
+      (
+        ~id,
+        ~answerType,
+        ~createQuizDistribution,
+        ~joinGameDistribution,
+        ~openGameDistribution,
+      ) => {
     id,
     createQuizDistribution,
     joinGameDistribution,
+    openGameDistribution,
     answerType,
   };
   let answerQuestion = player => {
@@ -58,6 +66,13 @@ module Player = {
     Distribution.MonthDistribution.happens(
       timestamp,
       player.createQuizDistribution,
+    );
+  };
+
+  let shouldOpenGame = (timestamp, player) => {
+    Distribution.MonthDistribution.happens(
+      timestamp,
+      player.openGameDistribution,
     );
   };
 
@@ -104,6 +119,7 @@ let createPlayerWithType = (~world, ~playerType) => {
       ~answerType=playerType.PlayerType.answerType,
       ~createQuizDistribution=playerType.createQuizDistribution,
       ~joinGameDistribution=playerType.joinGameDistribution,
+      ~openGameDistribution=playerType.openGameDistribution,
     );
   (id, {...world, players: [player, ...world.players]});
 };
@@ -132,7 +148,14 @@ let createQuiz = world => {
   (id, quizTitle, questions, {...world, quizzes: [quiz, ...world.quizzes]});
 };
 
-let playersOpeningGame = world => world.players;
+let playersOpeningGame = (timestamp, world) =>
+  List.filter_map(world.players, ~f=player =>
+    if (Player.shouldOpenGame(timestamp, player)) {
+      Some(player);
+    } else {
+      None;
+    }
+  );
 
 let shouldCreatePlayer = (timestamp, world) => {
   Distribution.MonthDistribution.happens(
@@ -152,7 +175,11 @@ let playersThatJoinAGame = (timestamp, world) => {
 // We should probably remove the players that don't create a quiz anymore to keep the performance ok
 let playersCreatingQuiz = (timestamp, world) => {
   List.filter_map(world.players, ~f=player =>
-    Player.shouldCreateQuiz(timestamp, player) ? Some(player) : None
+    if (Player.shouldCreateQuiz(timestamp, player)) {
+      Some(player);
+    } else {
+      None;
+    }
   );
 };
 

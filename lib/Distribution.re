@@ -159,9 +159,9 @@ module PercentageDistribution = {
 	 * Will pick "foo" in 5% of the cases, "bar" in 10% and the rest will be "baz"
 	 */
   open! Base;
-  type t('a) = list((int, 'a));
+  type t('a) = list((int, unit => 'a));
   type partial('a) = {
-    distributions: list((int, 'a)),
+    distributions: list((int, unit => 'a)),
     currentPosition: int,
   };
 
@@ -186,7 +186,7 @@ module PercentageDistribution = {
   let pick = distribution => {
     let percentage = Random.int(100);
     List.find_map_exn(
-      ~f=((d, outcome)) => percentage >= d ? Some(outcome) : None,
+      ~f=((d, outcome)) => percentage >= d ? Some(outcome()) : None,
       distribution,
     );
   };

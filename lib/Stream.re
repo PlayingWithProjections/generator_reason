@@ -1,20 +1,15 @@
 let basic = () => {
-	Console.log(Random.State.default);
-  let timeRange = TimeRange.daysUntilNow(~days=90);
+  let timeRange = TimeRange.daysUntilNow(~days=50);
   let playerDistribution = {
     Distribution.(
       PercentageDistribution.empty()
-      |> PercentageDistribution.add(
-           ~i=20,
-           ~outcome=PlayerType.creatingQuizButNeverPlaying(),
-         )
-      |> PercentageDistribution.rest(~outcome=PlayerType.boringPlayer())
+      |> PercentageDistribution.rest(~outcome=PlayerType.boringPlayer)
     );
   };
   let createPlayerDistribution = {
     let m =
       Distribution.MDistribution.init(timeRange.TimeRange.startTimestamp)
-      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(20))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(30))
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(30))
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(90))
       |> Distribution.MDistribution.build;
@@ -29,35 +24,33 @@ let basic = () => {
     )
     |> Simulation.run;
 
-  Console.log(List.length(events));
   let jsonEvents = List.map(~f=Events.toJson, events);
   Yojson.Basic.to_file(~len=100000, "data/basic.json", `List(jsonEvents));
   ();
 };
 
 let full = () => {
-	Console.log(Random.State.default);
-  let timeRange = TimeRange.daysUntilNow(~days=10);
+  let timeRange = TimeRange.daysUntilNow(~days=200);
   let playerDistribution = {
     Distribution.(
       PercentageDistribution.empty()
       |> PercentageDistribution.add(
            ~i=1,
-           ~outcome=PlayerType.creatingQuizButNeverPlaying(),
+           ~outcome=PlayerType.creatingQuizButNeverPlaying,
          )
       |> PercentageDistribution.add(
            ~i=2,
-           ~outcome=PlayerType.alwaysPlayingAndAlwaysWinningBot(),
+           ~outcome=PlayerType.alwaysPlayingAndAlwaysWinningBot,
          )
       |> PercentageDistribution.add(
            ~i=1,
-           ~outcome=PlayerType.veryGoodQuizPlayer(),
+           ~outcome=PlayerType.veryGoodQuizPlayer,
          )
       |> PercentageDistribution.add(
-           ~i=5,
-           ~outcome=PlayerType.goodQuizPlayer(),
+           ~i=10,
+           ~outcome=PlayerType.goodQuizPlayer,
          )
-      |> PercentageDistribution.rest(~outcome=PlayerType.boringPlayer())
+      |> PercentageDistribution.rest(~outcome=PlayerType.boringPlayer)
     );
   };
   let createPlayerDistribution = {
@@ -81,7 +74,6 @@ let full = () => {
     )
     |> Simulation.run;
 
-  Console.log(List.length(events));
   let jsonEvents = List.map(~f=Events.toJson, events);
   Yojson.Basic.to_file(~len=10000000, "data/full.json", `List(jsonEvents));
   ();

@@ -1,5 +1,5 @@
 {
-  "checksum": "ab333157199b9ea74fc75125890fd4ba",
+  "checksum": "4cf7a75aea68f1f1aaf7ec056e8fe558",
   "root": "quizzy-stream@link-dev:./package.json",
   "node": {
     "refmterr@3.2.2@d41d8cd9": {
@@ -34,7 +34,7 @@
       "overrides": [],
       "dependencies": [
         "refmterr@3.2.2@d41d8cd9", "ocaml@4.6.1000@d41d8cd9",
-        "@reason-native/rely@2.2.0@d41d8cd9",
+        "@reason-native/rely@3.1.0@d41d8cd9",
         "@reason-native/pastel@0.2.1@d41d8cd9",
         "@reason-native/console@0.1.0@d41d8cd9",
         "@opam/yojson@opam:1.5.0@45b942d4", "@opam/rtop@opam:3.5.0@810d71c8",
@@ -65,14 +65,14 @@
       "dependencies": [],
       "devDependencies": []
     },
-    "@reason-native/rely@2.2.0@d41d8cd9": {
-      "id": "@reason-native/rely@2.2.0@d41d8cd9",
+    "@reason-native/rely@3.1.0@d41d8cd9": {
+      "id": "@reason-native/rely@3.1.0@d41d8cd9",
       "name": "@reason-native/rely",
-      "version": "2.2.0",
+      "version": "3.1.0",
       "source": {
         "type": "install",
         "source": [
-          "archive:https://registry.npmjs.org/@reason-native/rely/-/rely-2.2.0.tgz#sha1:85f34f15dcd8547033759d9fccdba03e12a32031"
+          "archive:https://registry.npmjs.org/@reason-native/rely/-/rely-3.1.0.tgz#sha1:4f59906dc7c18ba86c998e44d6463b6be866dfc6"
         ]
       },
       "overrides": [],

@@ -226,17 +226,14 @@ let createQuizHandler = (timestamp, world) => {
 };
 
 let playGameHandler = (timestamp, world) => {
-  let playersOpeningGame = World.playersOpeningGame(world);
+  let playersOpeningGame = World.playersOpeningGame(timestamp, world);
   List.fold_left(
     ~init=(world, []),
     ~f=
-      ((world, events), player) =>
-        if (Distribution.happens(Distribution.PerDay(10))) {
-          let (world, newEvents) = playGame(player, world, timestamp);
-          (world, newEvents @ events);
-        } else {
-          (world, events);
-        },
+      ((world, events), player) => {
+        let (world, newEvents) = playGame(player, world, timestamp);
+        (world, newEvents @ events);
+      },
     playersOpeningGame,
   );
 };

@@ -39,15 +39,15 @@ let full = () => {
            ~outcome=PlayerType.creatingQuizButNeverPlaying,
          )
       |> PercentageDistribution.add(
-           ~i=2.,
-           ~outcome=PlayerType.alwaysPlayingAndAlwaysWinningBot,
+           ~i=0.5,
+           ~outcome=PlayerType.alwaysWinningBot,
          )
       |> PercentageDistribution.add(
            ~i=1.,
            ~outcome=PlayerType.veryGoodQuizPlayer,
          )
       |> PercentageDistribution.add(
-           ~i=10.,
+           ~i=5.,
            ~outcome=PlayerType.goodQuizPlayer,
          )
       |> PercentageDistribution.rest(~outcome=PlayerType.boringPlayer)
@@ -63,11 +63,11 @@ let full = () => {
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(90))
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(120))
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(150))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(180))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(120))
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(110))
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(90))
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(70))
-      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(30))
-      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(90))
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(120))
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(125))
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(100))

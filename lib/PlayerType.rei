@@ -10,7 +10,7 @@ and answerType = {
   correctness: float,
 };
 
-let alwaysPlayingAndAlwaysWinningBot: unit => t;
+let alwaysWinningBot: unit => t;
 let creatingQuizButNeverPlaying: unit => t;
 let boringPlayer: unit => t;
 let veryGoodQuizPlayer: unit => t;

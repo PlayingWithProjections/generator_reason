@@ -12,11 +12,12 @@ and answerType = {
   correctness: float,
 };
 
-let alwaysPlayingAndAlwaysWinningBot = () => {
+let alwaysWinningBot = () => {
+	Console.log("BOT");
   let createQuizDistribution =
     MonthDistribution.Never |> MonthDistribution.create;
   let joinGameDistribution =
-    MonthDistribution.ForEver(Steady(OneIn(Random.int(10))))
+    MonthDistribution.ForEver(Steady(OneIn(Random.int(2))))
     |> MonthDistribution.create;
   let openGameDistribution =
     MonthDistribution.Never |> MonthDistribution.create;
@@ -51,10 +52,10 @@ let boringPlayer = () => {
     MonthDistribution.Number(20, Steady(PerDay(100)))
     |> MonthDistribution.create;
   let joinGameDistribution =
-    MonthDistribution.Number(Random.int(20), Steady(OneIn(20)))
+    MonthDistribution.Number(Random.int(20), Steady(OneIn(Random.int(20))))
     |> MonthDistribution.create;
   let openGameDistribution =
-    MonthDistribution.Number(Random.int(10), Steady(PerDay(100)))
+    MonthDistribution.Number(Random.int(10), Steady(PerMonth(Random.int(40))))
     |> MonthDistribution.create;
   let answerType = {delay: 0.5, delayRange: 0.5, correctness: 0.5};
   {
@@ -72,7 +73,7 @@ let veryGoodQuizPlayer = () => {
     MonthDistribution.ForEver(Steady(OneIn(Random.int(10))))
     |> MonthDistribution.create;
   let openGameDistribution =
-    MonthDistribution.ForEver(Steady(PerMonth(Random.int(10))))
+    MonthDistribution.ForEver(Steady(PerMonth(Random.int(40))))
     |> MonthDistribution.create;
   let answerType = {delay: 0.2, delayRange: 0.5, correctness: 0.9};
   {
@@ -90,7 +91,7 @@ let goodQuizPlayer = () => {
     MonthDistribution.ForEver(Steady(OneIn(Random.int(10))))
     |> MonthDistribution.create;
   let openGameDistribution =
-    MonthDistribution.ForEver(Steady(PerMonth(Random.int(10))))
+    MonthDistribution.ForEver(Steady(PerMonth(Random.int(40))))
     |> MonthDistribution.create;
   let answerType = {delay: 0.4, delayRange: 0.6, correctness: 0.6};
   {

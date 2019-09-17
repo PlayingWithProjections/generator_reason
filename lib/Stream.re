@@ -30,24 +30,24 @@ let basic = () => {
 };
 
 let full = () => {
-  let timeRange = TimeRange.daysUntilNow(~days=200);
+  let timeRange = TimeRange.daysUntilNow(~days=500);
   let playerDistribution = {
     Distribution.(
       PercentageDistribution.empty()
       |> PercentageDistribution.add(
-           ~i=1,
+           ~i=1.,
            ~outcome=PlayerType.creatingQuizButNeverPlaying,
          )
       |> PercentageDistribution.add(
-           ~i=2,
+           ~i=2.,
            ~outcome=PlayerType.alwaysPlayingAndAlwaysWinningBot,
          )
       |> PercentageDistribution.add(
-           ~i=1,
+           ~i=1.,
            ~outcome=PlayerType.veryGoodQuizPlayer,
          )
       |> PercentageDistribution.add(
-           ~i=10,
+           ~i=10.,
            ~outcome=PlayerType.goodQuizPlayer,
          )
       |> PercentageDistribution.rest(~outcome=PlayerType.boringPlayer)
@@ -60,8 +60,18 @@ let full = () => {
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(40))
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(50))
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(50))
-      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(60))
       |> Distribution.MDistribution.add(~data=Distribution.PerMonth(90))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(120))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(150))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(110))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(90))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(70))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(30))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(90))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(120))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(125))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(100))
+      |> Distribution.MDistribution.add(~data=Distribution.PerMonth(80))
       |> Distribution.MDistribution.build;
     Distribution.MonthDistribution.ForEver(Distribution.Spread(m))
     |> Distribution.MonthDistribution.create;

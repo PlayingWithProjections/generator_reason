@@ -13,7 +13,6 @@ and answerType = {
 };
 
 let alwaysWinningBot = () => {
-	Console.log("BOT");
   let createQuizDistribution =
     MonthDistribution.Never |> MonthDistribution.create;
   let joinGameDistribution =
@@ -52,10 +51,16 @@ let boringPlayer = () => {
     MonthDistribution.Number(20, Steady(PerDay(100)))
     |> MonthDistribution.create;
   let joinGameDistribution =
-    MonthDistribution.Number(Random.int(20), Steady(OneIn(Random.int(20))))
+    MonthDistribution.Number(
+      Random.int(40),
+      Steady(OneIn(Random.int(20))),
+    )
     |> MonthDistribution.create;
   let openGameDistribution =
-    MonthDistribution.Number(Random.int(10), Steady(PerMonth(Random.int(40))))
+    MonthDistribution.Number(
+      Random.int(20),
+      Steady(PerMonth(Random.int(40))),
+    )
     |> MonthDistribution.create;
   let answerType = {delay: 0.5, delayRange: 0.5, correctness: 0.5};
   {

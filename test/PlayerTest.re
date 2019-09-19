@@ -10,8 +10,7 @@ describe("player answers questions", ({test}) => {
     MonthDistribution.ForEver(Steady(PerMonth(10)))
     |> MonthDistribution.create;
   let openGameDistribution =
-    MonthDistribution.Never
-    |> MonthDistribution.create;
+    MonthDistribution.Never |> MonthDistribution.create;
 
   let create = answerType =>
     World.Player.create(
@@ -19,7 +18,7 @@ describe("player answers questions", ({test}) => {
       ~answerType,
       ~createQuizDistribution,
       ~joinGameDistribution,
-      ~openGameDistribution
+      ~openGameDistribution,
     );
 
   test("fast correct player", ({expect}) => {

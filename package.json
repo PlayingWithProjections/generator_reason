@@ -19,22 +19,15 @@
     "@opam/dune": "*",
     "@opam/ppx_deriving": "4.4",
     "@opam/ptime": "0.8.5",
-    "@opam/rtop": "3.5.0",
     "@opam/yojson": "1.5.0",
     "@reason-native/console": "*",
     "@reason-native/pastel": "*",
     "@reason-native/rely": "^3.1.0",
-    "ocaml": "~4.6.0",
+    "ocaml": "~4.9",
     "refmterr": "*"
   },
   "devDependencies": {
-    "@opam/merlin": "*",
-    "@opam/merlin-lsp": "*",
-    "ocaml": "~4.6.0",
+    "ocaml": "~4.9",
     "@opam/odoc": "*"
-  },
-  "resolutions": {
-    "@opam/merlin-lsp":
-      "github:ocaml/merlin:merlin-lsp.opam#bd94d345bf19e612c11737de2d7d401bcc4348a6"
   }
 }

@@ -8,17 +8,17 @@ let createDir dir =
   ()
 ;;
 
-Console.log "Running Generator"
+Stdio.print_endline "Running Generator"
 
 let () = createDir "data";;
 
-Console.log "Generating basic file..."
+Stdio.print_endline "Generating basic file..."
 
 let () = Lib.Stream.basic ();;
 
-Console.log "Generating full file...";;
-Console.log "Hang on, this might take a bit"
+Stdio.print_endline "Generating full file...";;
+Stdio.print_endline "Hang on, this might take a bit"
 
 let () = Lib.Stream.full ();;
 
-Console.log "Done"
+Stdio.print_endline "Done"

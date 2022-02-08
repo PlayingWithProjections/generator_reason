@@ -2,12 +2,8 @@
   "name": "quizzy-stream",
   "version": "0.1.0",
   "license": "MIT",
-  "esy": {
-    "build": "refmterr dune build -p #{self.name}",
-    "buildsInSource": "_build",
-    "release": { "bin": [ "Generator" ] }
-  },
   "scripts": {
+    "bin": "esy b dune exec bin/Generator.exe",
     "test": "esy x RunTests.exe",
     "doc": "esy dune build @doc",
     "fmt": "esy dune build @fmt --auto-promote"
@@ -15,8 +11,10 @@
   "dependencies": {
     "@opam/base": "v0.14.3",
     "@opam/calendar": "2.04",
+    "@opam/down": "0.0.4",
     "@opam/dune": "*",
     "@opam/ocamlformat": "0.20.1",
+    "@opam/ocp-index": "1.3.3",
     "@opam/ppx_deriving": "5.2",
     "@opam/ptime": "0.8.5",
     "@opam/yojson": "1.5.0",

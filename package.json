@@ -13,21 +13,14 @@
     "fmt": "esy dune build @fmt --auto-promote"
   },
   "dependencies": {
-    "@esy-ocaml/reason": "*",
-    "@opam/base": "v0.12.2",
+    "@opam/base": "v0.14.3",
     "@opam/calendar": "2.04",
     "@opam/dune": "*",
-    "@opam/ppx_deriving": "4.4",
+    "@opam/ocamlformat": "0.20.1",
+    "@opam/ppx_deriving": "5.2",
     "@opam/ptime": "0.8.5",
     "@opam/yojson": "1.5.0",
-    "@reason-native/console": "*",
-    "@reason-native/pastel": "*",
-    "@reason-native/rely": "^3.1.0",
-    "ocaml": "~4.9",
-    "refmterr": "*"
+    "ocaml": "~4.13"
   },
-  "devDependencies": {
-    "ocaml": "~4.9",
-    "@opam/odoc": "*"
-  }
+  "devDependencies": { "ocaml": "~4.13", "@opam/odoc": "*" }
 }

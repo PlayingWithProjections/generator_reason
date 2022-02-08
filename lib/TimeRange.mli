@@ -1,4 +1,3 @@
-type t = {
-  startTimestamp: float ;
-  endTimestamp: float }
+type t = { startTimestamp : float; endTimestamp : float }
+
 val daysUntilNow : days:int -> t
